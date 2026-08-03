@@ -10,20 +10,52 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Rating } from "@/components/ui/rating";
-import { showToast } from "@/components/ui/toast";
+import { useSaveStatus } from "@/lib/autosave/save-status-context";
+import { simulatePersist } from "@/lib/autosave/simulate-persist";
+import { useActivity } from "@/lib/activity/activity-context";
+import { useDebouncedCommit } from "@/lib/utils/use-debounced-commit";
 import { resolveThemeVars } from "@/lib/theme/resolve";
 import { isValidHex } from "@/lib/theme/color";
+import { PRESETS } from "@/lib/theme/presets";
 import type { PresetId } from "@/lib/theme/types";
 import { demoRestaurant } from "@/lib/demo/note-di-caffe-demo";
 
 export default function AparienciaPage() {
+  const { runAutosave } = useSaveStatus();
+  const { logActivity } = useActivity();
+
   const initialTheme = demoRestaurant.theme as { preset?: PresetId; overrides?: { primaryColor?: string } };
   const [preset, setPreset] = useState<PresetId>(initialTheme.preset ?? "moderno");
   const [primaryOverride, setPrimaryOverride] = useState(initialTheme.overrides?.primaryColor ?? "");
   const [logo, setLogo] = useState<string | null>(demoRestaurant.logo_url);
   const [cover, setCover] = useState<string | null>(demoRestaurant.cover_url);
 
+  function changePreset(next: PresetId) {
+    setPreset(next);
+    logActivity("theme", `cambió el tema visual a ${PRESETS[next].label}`);
+    runAutosave(() => simulatePersist());
+  }
+
+  function changeLogo(next: string | null) {
+    setLogo(next);
+    logActivity("image", next ? "actualizó el logo" : "quitó el logo");
+    runAutosave(() => simulatePersist());
+  }
+
+  function changeCover(next: string | null) {
+    setCover(next);
+    logActivity("image", next ? "actualizó la foto de portada" : "quitó la foto de portada");
+    runAutosave(() => simulatePersist());
+  }
+
   const overrideIsValid = !primaryOverride || isValidHex(primaryOverride);
+  useDebouncedCommit(primaryOverride, (value) => {
+    if (!value || isValidHex(value)) {
+      logActivity("theme", value ? `cambió el color de marca a ${value}` : "quitó el color de marca personalizado");
+      runAutosave(() => simulatePersist());
+    }
+  });
+
   const themeVars = resolveThemeVars(
     { preset, overrides: overrideIsValid && primaryOverride ? { primaryColor: primaryOverride } : undefined },
     "light",
@@ -34,9 +66,6 @@ export default function AparienciaPage() {
       <PageHeader
         title="Apariencia"
         description="Elige un tema y, si quieres, tu color de marca exacto — el resto (radios, sombras, tipografía) lo decide el tema para que nunca se rompa el diseño."
-        action={
-          <Button onClick={() => showToast.success("Apariencia guardada (demo)")}>Guardar cambios</Button>
-        }
       />
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
@@ -46,18 +75,18 @@ export default function AparienciaPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <Label className="mb-1.5 block">Logo</Label>
-                <ImageDropzone value={logo} onChange={setLogo} aspect="aspect-square" label="Logo cuadrado" />
+                <ImageDropzone value={logo} onChange={changeLogo} aspect="aspect-square" label="Logo cuadrado" />
               </div>
               <div>
                 <Label className="mb-1.5 block">Portada</Label>
-                <ImageDropzone value={cover} onChange={setCover} aspect="aspect-video" label="Foto de portada (16:9)" />
+                <ImageDropzone value={cover} onChange={changeCover} aspect="aspect-video" label="Foto de portada (16:9)" />
               </div>
             </div>
           </section>
 
           <section>
             <h2 className="mb-3 font-display text-base font-semibold text-foreground">Tema visual</h2>
-            <ThemePresetPicker value={preset} onChange={setPreset} />
+            <ThemePresetPicker value={preset} onChange={changePreset} />
           </section>
 
           <section>

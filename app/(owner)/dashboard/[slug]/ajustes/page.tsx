@@ -7,11 +7,13 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScheduleEditor, type WeekSchedule } from "@/components/dashboard/schedule-editor";
 import { SocialLinksEditor, type SocialLinks } from "@/components/dashboard/social-links-editor";
-import { showToast } from "@/components/ui/toast";
+import { useSaveStatus } from "@/lib/autosave/save-status-context";
+import { simulatePersist } from "@/lib/autosave/simulate-persist";
+import { useActivity } from "@/lib/activity/activity-context";
+import { useDebouncedCommit } from "@/lib/utils/use-debounced-commit";
 import { demoRestaurant } from "@/lib/demo/note-di-caffe-demo";
 import type { RestaurantOperatingStatus } from "@/lib/types/database";
 
@@ -22,6 +24,9 @@ const OPERATING_STATUS_LABEL: Record<RestaurantOperatingStatus, string> = {
 };
 
 export default function AjustesPage() {
+  const { runAutosave } = useSaveStatus();
+  const { logActivity } = useActivity();
+
   const [name, setName] = useState(demoRestaurant.name);
   const [description, setDescription] = useState(demoRestaurant.description ?? "");
   const [phone, setPhone] = useState(demoRestaurant.phone ?? "");
@@ -34,16 +39,30 @@ export default function AjustesPage() {
   const [schedule, setSchedule] = useState<WeekSchedule>(demoRestaurant.schedule as WeekSchedule);
   const [social, setSocial] = useState<SocialLinks>(demoRestaurant.social_links as SocialLinks);
 
-  function handleSave() {
-    showToast.success("Ajustes guardados (demo)", "Todavía no se ha escrito nada en Supabase.");
+  function saveField(kind: "settings" | "schedule", message: string) {
+    logActivity(kind, message);
+    runAutosave(() => simulatePersist());
+  }
+
+  useDebouncedCommit(name, (v) => v.trim() && saveField("settings", `cambió el nombre del restaurante a «${v}»`));
+  useDebouncedCommit(description, () => saveField("settings", "actualizó la descripción del restaurante"));
+  useDebouncedCommit(phone, () => saveField("settings", "actualizó el teléfono"));
+  useDebouncedCommit(whatsapp, () => saveField("settings", "actualizó el WhatsApp"));
+  useDebouncedCommit(address, () => saveField("settings", "actualizó la dirección"));
+  useDebouncedCommit(operatingMessage, () => saveField("settings", "actualizó el mensaje para clientes"));
+  useDebouncedCommit(schedule, () => saveField("schedule", "actualizó el horario del restaurante"));
+  useDebouncedCommit(social, () => saveField("settings", "actualizó las redes sociales"));
+
+  function changeOperatingStatus(status: RestaurantOperatingStatus) {
+    setOperatingStatus(status);
+    saveField("settings", `cambió el estado del restaurante a ${OPERATING_STATUS_LABEL[status]}`);
   }
 
   return (
     <div>
       <PageHeader
         title="Ajustes"
-        description="Información pública de tu restaurante, horarios y redes sociales."
-        action={<Button onClick={handleSave}>Guardar cambios</Button>}
+        description="Información pública de tu restaurante, horarios y redes sociales — cada cambio se guarda solo."
       />
 
       <Tabs defaultValue="info" className="max-w-2xl">
@@ -85,7 +104,7 @@ export default function AjustesPage() {
           <Card className="flex flex-col gap-5 p-5">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="operating-status">Estado del restaurante</Label>
-              <Select value={operatingStatus} onValueChange={(v) => setOperatingStatus(v as RestaurantOperatingStatus)}>
+              <Select value={operatingStatus} onValueChange={(v) => changeOperatingStatus(v as RestaurantOperatingStatus)}>
                 <SelectTrigger id="operating-status" className="max-w-xs">
                   <SelectValue />
                 </SelectTrigger>
