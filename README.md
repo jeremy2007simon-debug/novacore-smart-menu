@@ -70,7 +70,8 @@ En el SQL Editor de tu proyecto, ejecuta en este orden exacto:
 
 1. `supabase/migrations/20260803120000_init_schema.sql`
 2. `supabase/migrations/20260803120100_functions_and_rls.sql`
-3. `supabase/seed.sql`
+3. `supabase/migrations/20260803140000_restaurant_external_rating.sql`
+4. `supabase/seed.sql`
 
 **Opción B — Supabase CLI:**
 
@@ -89,12 +90,30 @@ aplica migraciones **y** `seed.sql` automáticamente.)
 
 `supabase/seed-demo-note-di-caffe.sql` da de alta un restaurante real (Note
 di Caffé, Los Abrigos — Tenerife) con sus datos verdaderos de contacto y
-horario, pero con categorías y platos **explícitamente marcados como
-demostración** ("Ejemplo — ...", "Producto de demostración — ...") hasta que
-exista la carta oficial. Es idempotente: se puede ejecutar varias veces sin
-duplicar nada. Aplícalo igual que el resto (SQL Editor o
+horario. Aplícalo igual que el resto (SQL Editor o
 `supabase db execute -f supabase/seed-demo-note-di-caffe.sql`) para tener
-`/r/note-di-caffe` navegable de inmediato.
+`/r/note-di-caffe` navegable de inmediato. Es idempotente.
+
+### 5.2 (Opcional) Carta real de Note di Caffé
+
+Aplica **después** del 5.1: `supabase/seed-demo-note-di-caffe-menu.sql`
+carga la carta real, extraída de fotografías de la carta física y generada
+con `python3 scripts/generate-demo-menu-seed.py` a partir de
+`supabase/demo-data/note-di-caffe-menu.json` (fuente editable — no toques
+el `.sql`, regenéralo).
+
+- 25 categorías, 157 platos, en el orden y con los precios exactos de la
+  carta — nada inventado.
+- Los 50 platos cuyo precio o nombre no se pudo leer con total confianza en
+  la foto se insertan con `status = 'hidden'` (no aparecen en la carta
+  pública) hasta confirmarse; cámbialos a `available` a mano o desde el
+  panel cuando exista.
+- 25 artículos sin precio legible en absoluto **no se insertaron** —
+  quedan listados como comentario al final del `.sql` y en
+  `_meta.global_pending_review` del JSON.
+
+Es idempotente y, si el restaurante todavía tenía las categorías de
+ejemplo del paso 5.1, las sustituye limpiamente por la carta real.
 
 ## 6. Crear el primer superadministrador de NovaCore
 

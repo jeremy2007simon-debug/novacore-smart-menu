@@ -1,0 +1,505 @@
+{
+  "_meta": {
+    "restaurant_slug": "note-di-caffe",
+    "source": "2 fotografías de la carta física (laminada), giradas 90°, con reflejos en varias zonas",
+    "instructions_followed": [
+      "No se ha inventado ningún producto, precio, ingrediente ni categoría.",
+      "Los precios son los que se leen en la foto — no se han redondeado ni corregido.",
+      "Todo lo no legible con confianza queda marcado con review: true y una nota explicando por qué.",
+      "Las descripciones solo se han rellenado cuando la carta trae un listado de ingredientes; si solo hay nombre, description queda null.",
+      "Las traducciones al inglés que ya aparecen impresas en la carta se guardan en translations.en."
+    ],
+    "generated_at": "2026-08-03",
+    "global_pending_review": [
+      "Sección completa de Vinos (tinto/rosado/cava/prosecco): cortada en la parte superior de la foto 2, precios no legibles. Repetir foto encuadrando bien esa esquina.",
+      "Sección completa de Whisky/Ginebra/Ron/Vodka: mismos motivos que Vinos, ningún precio legible con confianza.",
+      "Cafetería: los precios de la variante 'Grande' (Cappuccino, Barraquito, Irish coffee, Chocolate, Chocolate con Nata) tienen reflejos — confirmar antes de publicar.",
+      "Sandwiches (códigos 26-35) y Bocadillos-Focaccia (36-43): el formato de doble precio por artículo es confuso en la foto (posible Unidad / Media docena, o dos tamaños) — confirmar significado y cifras exactas.",
+      "Piadina (44-53): bloque muy denso, varias filas con precios que podrían estar desplazados una posición.",
+      "Platos Calientes: precios de las 4 variantes de omelette (72-75) con reflejo, confirmar.",
+      "Código 118 aparece tanto en Sandwiches como en Tostadas con platos distintos — probable error de lectura en uno de los dos, confirmar en la carta física.",
+      "Pizza 108 (Strachino) a 8.90 rompe el patrón de precio de las demás pizzas 'premium' (12.50-13.50) — confirmar si es correcto o si el precio real es otro.",
+      "Papas (77-79) y Pasta (82-83): un par de precios con reflejo, confirmar."
+    ]
+  },
+  "categories": [
+    {
+      "sort_order": 0,
+      "name": "Cafetería",
+      "name_en": "Coffee",
+      "items": [
+        { "name": "Americano", "price": 1.40 },
+        { "name": "Espresso", "price": 1.20 },
+        { "name": "Cortado", "price": 1.30, "variants": [{ "label": "Grande", "price": 1.50 }] },
+        { "name": "Leche y Leche", "price": 1.40, "variants": [{ "label": "Grande", "price": 1.70 }] },
+        { "name": "Café con leche", "price": 1.40, "variants": [{ "label": "Grande", "price": 1.70 }] },
+        { "name": "Cappuccino", "price": 1.60, "variants": [{ "label": "Grande", "price": 3.20 }], "review": true, "review_note": "precio 'Grande' con reflejo, confirmar" },
+        { "name": "Barraquito", "price": 1.70, "variants": [{ "label": "Grande", "price": 3.20 }], "review": true, "review_note": "precio 'Grande' con reflejo, confirmar" },
+        { "name": "Irish coffee", "price": 3.10, "variants": [{ "label": "Grande", "price": 4.90 }], "review": true, "review_note": "precio 'Grande' con reflejo, confirmar" },
+        { "name": "Chocolate", "price": 2.50, "variants": [{ "label": "Grande", "price": 3.50 }], "review": true, "review_note": "precio 'Grande' con reflejo, confirmar" },
+        { "name": "Chocolate con Nata", "price": 2.80, "variants": [{ "label": "Grande", "price": 3.60 }], "review": true, "review_note": "precio 'Grande' con reflejo, confirmar" },
+        { "name": "Goloso", "description": "Brandy, chocolate y nata", "price": 5.50 },
+        { "name": "Lubumba", "description": "Leche condensada, café, chocolate y nata", "price": 5.50, "review": true, "review_note": "nombre 'Lubumba' poco legible, confirmar grafía" },
+        { "name": "Infusiones", "name_en": "Herbal teas", "price": 1.50 }
+      ]
+    },
+    {
+      "sort_order": 1,
+      "name": "Zumos y Batidos",
+      "name_en": "Juices & Milk Shakes",
+      "items": [
+        {
+          "name": "Zumo o batido (1 fruta)",
+          "name_en": "Juice or milkshake (1 fruit)",
+          "ingredients": ["Naranja / Orange", "Fresa / Strawberry", "Piña / Pineapple", "Papaya", "Plátano / Banana", "Mango"],
+          "price": 3.70
+        },
+        { "name": "Batido Mix", "name_en": "Mix milkshake", "price": 4.90 }
+      ]
+    },
+    {
+      "sort_order": 2,
+      "name": "Bollería y Tartas",
+      "name_en": "Pastries",
+      "items": [
+        { "code": "01", "name": "Croissant", "price": 1.50 },
+        { "code": "02", "name": "Tartaletas variadas", "name_en": "Assorted tartlets", "price": 2.00 },
+        { "code": "03", "name": "Pastel Relleno", "name_en": "Stuffed Pastry", "price": 2.00 },
+        { "code": "04", "name": "Croissant con Nutella", "price": 2.00 },
+        { "code": "05", "name": "Bombolone", "price": 1.60 },
+        { "code": "06", "name": "Croissant integral", "name_en": "Wholegrain croissant", "price": 2.80 },
+        { "code": "08", "name": "Muffin sin gluten", "name_en": "Gluten-free muffin", "price": 1.50 },
+        {
+          "code": "10",
+          "name": "Pastas de té",
+          "description": "Con mermelada de temporada. Extra topping chocolate o dulce de leche. Preguntar por fruta de temporada.",
+          "price": 1.20,
+          "review": true,
+          "review_note": "el texto 'extra topping / preguntar por fruta de temporada' podría pertenecer a Crepes Dulces en vez de a este artículo — confirmar límite de sección"
+        }
+      ]
+    },
+    {
+      "sort_order": 3,
+      "name": "Crepes Dulces",
+      "name_en": "Sweet Crepes",
+      "items": [
+        { "code": "12", "name": "Azúcar y Limón", "name_en": "Sugar and lemon", "price": 4.50 },
+        { "code": "13", "name": "Nutella", "price": 5.30 },
+        { "code": "14", "name": "Plátano", "name_en": "Banana", "price": 5.30 },
+        { "code": "15", "name": "Fresa", "name_en": "Strawberry", "price": 5.30 },
+        { "code": "16", "name": "Piña", "name_en": "Pineapple", "price": 5.30 }
+      ]
+    },
+    {
+      "sort_order": 4,
+      "name": "Crepes Salados",
+      "name_en": "Salty Crepes",
+      "items": [
+        { "code": "18", "name": "Jamón y Queso", "name_en": "Ham and Cheese", "price": 6.50 },
+        { "code": "19", "name": "Serrano y Queso", "name_en": "Serrano Ham and Cheese", "price": 7.40 },
+        { "code": "20", "name": "Salmón y Brie", "name_en": "Salmon and Brie", "price": 9.30 },
+        {
+          "code": "21",
+          "name": "Note di Caffè",
+          "description": "Pollo, mozzarella, ensalada",
+          "translations": { "en": { "description": "Chicken, mozzarella, salad" } },
+          "price": 9.30,
+          "review": true,
+          "review_note": "mismo precio que el 20, confirmar que no es un error de lectura"
+        }
+      ]
+    },
+    {
+      "sort_order": 5,
+      "name": "Brunch",
+      "name_en": "Let's Brunch",
+      "items": [
+        {
+          "code": "22",
+          "name": "Note di Caffè Español",
+          "name_en": "Spanish (2 pers.)",
+          "description": "Muesli, fruta, yogur, queso, jamón, huevo, ensalada, salmón, brie, pan, mantequilla, mermelada, zumo de naranja 1/2 lt.",
+          "translations": { "en": { "description": "Muesli, fruit, yogurt, cheese, Serrano ham, egg, salad, salmon, brie, bread, butter, jam, orange juice 1/2 lt" } },
+          "price": 34.00
+        },
+        {
+          "code": "23",
+          "name": "Note di Caffè Inglés",
+          "name_en": "English (2 pers.)",
+          "description": "Muesli, fruta, yogur, judías, huevo, salchicha, pan, mantequilla, (Café, leche o té) zumo de naranja 1/2 lt.",
+          "translations": { "en": { "description": "Muesli, fruit, yogurt, beans, egg, sausage, bread, butter, (coffee, milk or tea) orange juice 1/2 lt" } },
+          "price": 34.00
+        },
+        {
+          "code": "24",
+          "name": "Desayuno Inglés",
+          "name_en": "English Breakfast",
+          "description": "Pan, huevo, bacon, salchichas, judías",
+          "translations": { "en": { "description": "Bread, egg, bacon, sausages, beans" } },
+          "price": 8.90
+        },
+        {
+          "code": "25",
+          "name": "Desayuno Peque",
+          "name_en": "Kid's Breakfast (1 pers.)",
+          "description": "Muesli, fruta, yogur, pan, Nutella, ColaCao",
+          "translations": { "en": { "description": "Muesli, fruits, yoghurt, bread, Nutella, ColaCao" } },
+          "price": 5.50
+        }
+      ]
+    },
+    {
+      "sort_order": 6,
+      "name": "Yogurt",
+      "name_en": "Yogurt",
+      "items": [
+        { "code": "109", "name": "Bowl con granola", "name_en": "Bowl with granola", "price": 4.80 },
+        { "code": "110", "name": "Bowl con granola y fruta", "name_en": "Bowl with granola and fruit", "price": 5.90 }
+      ]
+    },
+    {
+      "sort_order": 7,
+      "name": "Tostadas",
+      "name_en": "Toasts (con pan de centeno / with rye bread)",
+      "items": [
+        { "code": "111", "name": "Aguacate, tomate, huevo", "translations": { "en": { "name": "Avocado, tomato, egg" } }, "price": 7.50, "review": true },
+        { "code": "112", "name": "Aguacate, tomate, queso blanco", "translations": { "en": { "name": "Avocado, tomato, white cheese" } }, "price": 7.50, "review": true },
+        { "code": "113", "name": "Queso blanco, tomate, orégano", "translations": { "en": { "name": "White cheese, tomato, oregano" } }, "price": 6.50 },
+        { "code": "114", "name": "Brie, salmón, rúcula", "translations": { "en": { "name": "Brie, salmon, rocket" } }, "price": 9.30 },
+        { "code": "115", "name": "Tumaca, serrano, queso blanco", "translations": { "en": { "name": "Tomato bread, Serrano ham, white cheese" } }, "price": 8.50, "review": true },
+        { "code": "116", "name": "Queso blanco, miel, nueces", "translations": { "en": { "name": "White cheese, honey, nuts" } }, "price": 6.50 },
+        { "code": "117", "name": "Tumaca, aceite, sal", "translations": { "en": { "name": "Tomato bread, oil, salt" } }, "price": 3.40 },
+        {
+          "code": "118",
+          "name": "Tumaca, serrano",
+          "translations": { "en": { "name": "Tomato bread, Serrano ham" } },
+          "price": 5.20,
+          "review": true,
+          "review_note": "el código 118 también aparece en Sandwiches con un plato distinto — confirmar cuál de los dos es el correcto"
+        }
+      ]
+    },
+    {
+      "sort_order": 8,
+      "name": "Sandwiches",
+      "name_en": "Sandwiches",
+      "items": [
+        {
+          "code": "118",
+          "name": "Tomate, queso blanco y orégano",
+          "translations": { "en": { "name": "Tomato and white cheese" } },
+          "price": 4.60,
+          "review": true,
+          "review_note": "el código 118 también aparece en Tostadas con un plato distinto — confirmar cuál de los dos es el correcto"
+        },
+        { "code": "26", "name": "Mixta", "translations": { "en": { "name": "Ham and cheese" } }, "price": 4.90, "review": true, "review_note": "puede tener dos precios (tamaños); confirmar" },
+        { "code": "27", "name": "Jamón Serrano y Mozzarella", "translations": { "en": { "name": "Serrano Ham and Mozzarella" } }, "price": 5.20 },
+        { "code": "28", "name": "Atún, Tomate y Cebolla", "translations": { "en": { "name": "Tuna, tomato and onion" } }, "price": 5.20 },
+        { "code": "29", "name": "Pollo / Lomo, Mechada / Tortilla", "translations": { "en": { "name": "Chicken / Pork loin, marinated / Tortilla" } }, "price": 5.20, "review": true, "review_note": "podrían ser 2-3 artículos distintos agrupados por error de lectura, confirmar" },
+        { "code": "30", "name": "Vegetal", "description": "Verduras salteadas variadas", "translations": { "en": { "description": "Sautéed vegetables" } }, "price": 5.20, "review": true },
+        { "code": "32", "name": "Salmón y Brie", "translations": { "en": { "name": "Salmon and Brie" } }, "price": 6.10 },
+        { "code": "33", "name": "Queso y Cebolla", "translations": { "en": { "name": "Cheese and Onion" } }, "price": 4.90 },
+        { "code": "34", "name": "Bresaola, Mozzarella y Rúcula", "translations": { "en": { "name": "Bresaola, Mozzarella and rocket salad" } }, "price": 6.10 },
+        {
+          "code": "35",
+          "name": "Americano",
+          "description": "Jamón, queso, bacon, huevo, ensalada",
+          "translations": { "en": { "description": "Ham, cheese, bacon, egg, salad" } },
+          "price": 6.90
+        }
+      ]
+    },
+    {
+      "sort_order": 9,
+      "name": "Bocadillos - Focaccia",
+      "name_en": "Rolls - Focaccia",
+      "note": "Formato de precio 'Unidad / 1/2 doc.' poco claro en la foto — confirmar significado antes de publicar.",
+      "items": [
+        { "code": "36", "name": "Pollo, Limón, Espárrago, Tortilla", "translations": { "en": { "name": "Chicken, lettuce, cheese, aioli" } }, "price": 5.50, "variants": [{ "label": "1/2 doc.", "price": 3.50 }], "review": true },
+        { "code": "37", "name": "Pata, Tomate, Queso Blanco", "translations": { "en": { "name": "Pork leg, tomato, white cheese" } }, "price": 5.50, "variants": [{ "label": "1/2 doc.", "price": 3.50 }], "review": true },
+        { "code": "38", "name": "Atún", "translations": { "en": { "name": "Tuna" } }, "price": 5.50, "variants": [{ "label": "1/2 doc.", "price": 3.50 }], "review": true },
+        { "code": "39", "name": "Salami", "price": 5.50, "variants": [{ "label": "1/2 doc.", "price": 3.50 }], "review": true },
+        { "code": "40", "name": "Jamón Serrano", "translations": { "en": { "name": "Serrano Ham" } }, "price": 5.50, "variants": [{ "label": "1/2 doc.", "price": 3.90 }], "review": true },
+        { "code": "42", "name": "Salmón", "translations": { "en": { "name": "Salmon" } }, "price": 7.20, "variants": [{ "label": "1/2 doc.", "price": 3.90 }], "review": true },
+        { "code": "43", "name": "Bresaola, Mozzarella y Rúcula", "translations": { "en": { "name": "Bresaola, Mozzarella and rocket salad" } }, "price": 7.20, "variants": [{ "label": "1/2 doc.", "price": 3.90 }], "review": true },
+        {
+          "code": "00",
+          "name": "Americano",
+          "description": "Jamón, queso, bacon, huevo, ensalada",
+          "translations": { "en": { "description": "Ham, cheese, bacon, egg, salad" } },
+          "price": 7.20,
+          "variants": [{ "label": "1/2 doc.", "price": 3.90 }],
+          "review": true
+        }
+      ]
+    },
+    {
+      "sort_order": 10,
+      "name": "Ensaladas y Platos Fríos",
+      "name_en": "Salads & Cold dishes",
+      "items": [
+        { "code": "58", "name": "Quinoa", "description": "Quinoa, lechuga, tomate, zanahoria, pepino, muesli con vinagre balsámico", "translations": { "en": { "description": "Quinoa, lettuce, tomato, carrot, cucumber, muesli with balsamic vinegar" } }, "price": 9.90, "review": true },
+        { "code": "59", "name": "Atún", "description": "Lechuga, tomate, atún, cebolla, aceitunas", "translations": { "en": { "description": "Lettuce, tomato, tuna, onion, olives" } }, "price": 9.90 },
+        { "code": "60", "name": "Pollo", "description": "Lechuga, tomate, pollo, zanahoria, aceitunas", "translations": { "en": { "description": "Lettuce, tomato, chicken, carrot, olives" } }, "price": 9.90 },
+        { "code": "61", "name": "Salmón", "description": "Lechuga, tomate, salmón, alcaparras, cebolla", "translations": { "en": { "description": "Lettuce, tomato, salmon, capers, onion" } }, "price": 9.90, "review": true },
+        { "code": "63", "name": "Aguacate", "description": "Lechuga, tomate, aguacate, parmesano, salmón, cebolla", "translations": { "en": { "description": "Lettuce, tomato, avocado, parmesan, salmon, onion" } }, "price": 10.90, "review": true },
+        { "code": "65", "name": "Carpaccio de Bresaola", "description": "Bresaola, rúcula, tomates cherry, miel, salsa de limón", "translations": { "en": { "description": "Bresaola, rocket, cherry tomatoes, honey, lemon sauce" } }, "price": 10.90 },
+        { "code": "67", "name": "Pan", "name_en": "Bread", "price": 2.50 }
+      ]
+    },
+    {
+      "sort_order": 11,
+      "name": "Piadina",
+      "name_en": "Piadina",
+      "note": "Bloque muy denso en la foto; confirmar la asociación exacta código→precio de toda la sección.",
+      "items": [
+        { "code": "44", "name": "Mixto", "description": "Jamón y Mozzarella", "translations": { "en": { "description": "Ham and Mozzarella" } }, "price": 7.30, "review": true },
+        { "code": "45", "name": "Jamón Serrano y Mozzarella", "translations": { "en": { "name": "Serrano Ham and Mozzarella" } }, "price": 7.60, "review": true },
+        { "code": "46", "name": "Atún, Pollo, Tomate y Cebolla", "translations": { "en": { "name": "Tuna, chicken, tomato and onion" } }, "price": 9.50, "review": true },
+        { "code": "47", "name": "Pollo, Vegetal, Aïoli", "translations": { "en": { "name": "Chicken, vegetal, aioli" } }, "price": 7.90, "review": true },
+        { "code": "48", "name": "Vegetal", "translations": { "en": { "name": "Vegetarian" } }, "price": 7.90, "review": true },
+        { "code": "49", "name": "Salmón, Brie y Rúcula", "translations": { "en": { "name": "Salmon, Brie and rocket" } }, "price": 9.50, "review": true },
+        { "code": "50", "name": "Salami y Queso", "translations": { "en": { "name": "Salami and Cheese" } }, "price": 7.90, "review": true },
+        { "code": "51", "name": "Bresaola, Mozzarella y Rúcula", "translations": { "en": { "name": "Bresaola, Mozzarella and rocket salad" } }, "price": 8.90, "review": true },
+        { "code": "52", "name": "Strachino, Rúcula y Jamón Serrano", "translations": { "en": { "name": "Stracchino, rocket salad and Serrano ham" } }, "price": 8.90, "review": true },
+        { "code": "53", "name": "Strachino, Rúcula, Jamón Serrano", "translations": { "en": { "name": "Stracchino, rocket salad and Serrano ham" } }, "price": 8.90, "review": true, "review_note": "prácticamente idéntico al 52 — probable error de lectura, confirmar si son platos distintos" }
+      ]
+    },
+    {
+      "sort_order": 12,
+      "name": "Hamburguesas",
+      "name_en": "Burgers",
+      "items": [
+        { "code": "54", "name": "200 gr. de carne, lechuga, tomate, queso", "translations": { "en": { "name": "200 gr of beef, lettuce, tomato, cheese" } }, "price": 7.20 },
+        { "code": "55", "name": "Hamburguesa de pollo", "translations": { "en": { "name": "Chicken Burger" } }, "price": 7.50 },
+        { "code": "56", "name": "Hamburguesa Americana", "translations": { "en": { "name": "American Burger" } }, "price": 8.90 },
+        { "code": "57", "name": "Note di Caffè", "description": "Hamburguesa doble, bacon, jamón", "price": 10.50 },
+        {
+          "code": "00",
+          "name": "Baño de Cheddar",
+          "description": "Con papas fritas",
+          "translations": { "en": { "name": "Cheddar Bath", "description": "With fries" } },
+          "price": 16.00
+        }
+      ]
+    },
+    {
+      "sort_order": 13,
+      "name": "Platos Calientes",
+      "name_en": "Warm Dishes",
+      "note": "Precios de los omelettes (72-75) y de las lasañas (68-69) con reflejo — confirmar todos antes de publicar.",
+      "items": [
+        { "code": "68", "name": "Lasaña Casera", "translations": { "en": { "name": "Homemade Lasagne" } }, "price": 8.80, "review": true },
+        { "code": "69", "name": "Lasaña Parmesano", "price": 8.80, "review": true, "review_note": "nombre poco legible, podría ser 'Lasaña Parmesana'" },
+        { "code": "71", "name": "Tortilla Casera", "translations": { "en": { "name": "Homemade Spanish omelette" } }, "price": 8.50, "review": true },
+        { "code": "72", "name": "Omelette de Jamón y Queso", "translations": { "en": { "name": "Ham and Cheese Omelette" } }, "price": null, "review": true, "review_note": "precio no legible con confianza" },
+        { "code": "73", "name": "Omelette de Salmón", "translations": { "en": { "name": "Salmon Omelette" } }, "price": null, "review": true, "review_note": "precio no legible con confianza" },
+        { "code": "74", "name": "Omelette de Atún", "translations": { "en": { "name": "Tuna Omelette" } }, "price": null, "review": true, "review_note": "precio no legible con confianza" },
+        { "code": "75", "name": "Omelette de Verduras", "translations": { "en": { "name": "Vegetable Omelette" } }, "price": null, "review": true, "review_note": "precio no legible con confianza" },
+        { "code": "109", "name": "Salchicha Polaca", "description": "Con papas fritas, ensalada, salsa a elegir", "translations": { "en": { "name": "Polish sausage", "description": "With chips, salad, sauce of choice" } }, "price": null, "review": true, "review_note": "precio no legible; además el código 109 coincide con Yogurt — confirmar" }
+      ]
+    },
+    {
+      "sort_order": 14,
+      "name": "Para Niños",
+      "name_en": "For Kids",
+      "items": [
+        { "code": "76", "name": "Nuggets de pollo con papas fritas", "translations": { "en": { "name": "Chicken nuggets with fries" } }, "price": 7.50, "review": true }
+      ]
+    },
+    {
+      "sort_order": 15,
+      "name": "Papas",
+      "name_en": "Chips",
+      "items": [
+        { "code": "77", "name": "Papas fritas", "name_en": "Chips", "price": null, "review": true, "review_note": "precio con reflejo" },
+        { "code": "78", "name": "Papas locas", "description": "Jamón, queso, ketchup y mayonesa", "translations": { "en": { "name": "Crazy Chips", "description": "Ham, cheese, ketchup and mayonnaise" } }, "price": null, "review": true, "review_note": "precio con reflejo" },
+        { "code": "79", "name": "Papas Note di Caffè", "description": "Con salchicha", "translations": { "en": { "name": "Note di Caffè Chips", "description": "Crazy chips with sausages" } }, "price": 7.50 },
+        { "code": "00", "name": "Papas bravas", "price": 7.50, "review": true, "review_note": "posible confusión con el siguiente artículo (Sweet potatoes)" },
+        { "code": "00", "name": "Sweet Potatoes", "price": 7.50, "review": true }
+      ]
+    },
+    {
+      "sort_order": 16,
+      "name": "Pasta",
+      "name_en": "Penne or Spaghetti",
+      "items": [
+        { "code": "80", "name": "Bolognese", "price": 8.50 },
+        { "code": "81", "name": "Tomate y Albahaca", "translations": { "en": { "name": "Tomato and Basil" } }, "price": 8.50 },
+        { "code": "82", "name": "Arrabiata", "description": "Tomate, ajo, cayena", "translations": { "en": { "description": "Tomato, garlic, chilli" } }, "price": 8.50, "review": true },
+        { "code": "83", "name": "Pesto", "description": "Aceite de oliva, ajo, albahaca, frutos secos, parmesano", "translations": { "en": { "description": "Olive oil, garlic, basil, pine nuts, Parmesan" } }, "price": 8.50, "review": true, "review_note": "confirmar que no se ha mezclado con la fila 82" },
+        { "code": "84", "name": "Carbonara", "description": "Huevo, nata, parmesano, guanciale", "translations": { "en": { "description": "Egg, cream, parmesan, guanciale" } }, "price": 8.50 },
+        { "code": "85", "name": "Salmón y Nata", "description": "Salmón, nata, cebolla", "translations": { "en": { "description": "Salmon, cream, onion" } }, "price": 9.30 }
+      ]
+    },
+    {
+      "sort_order": 17,
+      "name": "Pizzas",
+      "name_en": "Pizzas",
+      "note": "Códigos 92 y 106 no aparecen en la carta (huecos normales de numeración, no se han inventado).",
+      "items": [
+        { "code": "93", "name": "Margherita", "description": "Tomate, mozzarella", "translations": { "en": { "description": "Tomato, mozzarella" } }, "price": 10.90 },
+        { "code": "94", "name": "Prosciutto", "description": "Tomate, mozzarella, jamón", "translations": { "en": { "description": "Tomato, mozzarella, ham" } }, "price": 10.90 },
+        { "code": "95", "name": "Tropical", "description": "Tomate, mozzarella, jamón, piña", "translations": { "en": { "description": "Tomato, mozzarella, ham, pineapple" } }, "price": 11.50 },
+        { "code": "96", "name": "4 Stagioni", "description": "Tomate, mozzarella, jamón, champiñones, alcachofas, aceitunas", "translations": { "en": { "description": "Tomato, mozzarella, ham, mushrooms, artichokes, olives" } }, "price": 12.50 },
+        { "code": "97", "name": "Diavola", "description": "Tomate, mozzarella, salchichón picante", "translations": { "en": { "description": "Tomato, mozzarella, spicy salami" } }, "price": 12.50 },
+        { "code": "98", "name": "Bombo", "description": "Tomate, mozzarella, salchichón, salami, bacon", "translations": { "en": { "description": "Tomato, mozzarella, sausages, salami, bacon" } }, "price": 12.50, "review": true, "review_note": "nombre 'Bombo' poco legible" },
+        { "code": "99", "name": "Tonno", "description": "Tomate, mozzarella, atún, cebolla", "translations": { "en": { "description": "Tomato, mozzarella, tuna, onion" } }, "price": 12.50 },
+        { "code": "100", "name": "Vegetal", "description": "Verduras salteadas variadas", "translations": { "en": { "description": "Sautéed vegetables" } }, "price": 11.90 },
+        { "code": "101", "name": "Napoli", "description": "Tomate, mozzarella, anchoas, alcaparras", "translations": { "en": { "description": "Tomato, mozzarella, anchovies, capers" } }, "price": 10.90 },
+        { "code": "102", "name": "Reina", "description": "Tomate, mozzarella, jamón, champiñones", "translations": { "en": { "description": "Tomato, mozzarella, ham, mushrooms" } }, "price": 11.90 },
+        { "code": "103", "name": "Barbacoa", "description": "Tomate, mozzarella, salchichón, bacon, salsa barbacoa", "translations": { "en": { "description": "Tomato, mozzarella, sausages, bacon, barbecue sauce" } }, "price": 12.50 },
+        { "code": "104", "name": "4 Quesos", "description": "Tomate, mozzarella, edam, parmesano, roquefort", "translations": { "en": { "description": "Tomato, mozzarella, edam, parmesan, roquefort" } }, "price": 12.50 },
+        { "code": "105", "name": "Note di Caffè", "description": "Tomate, mozzarella, strachino, jamón serrano, rúcula", "translations": { "en": { "description": "Tomato, mozzarella, stracchino, Serrano ham, rocket" } }, "price": 13.50 },
+        { "code": "107", "name": "Parma", "description": "Tomate, mozzarella, jamón serrano, rúcula", "translations": { "en": { "description": "Tomato, mozzarella, Serrano ham, rocket" } }, "price": 12.90 },
+        {
+          "code": "108",
+          "name": "Strachino",
+          "description": "Tomate, mozzarella, strachino, jamón, rúcula",
+          "translations": { "en": { "description": "Tomato, mozzarella, stracchino, ham, rocket" } },
+          "price": 8.90,
+          "review": true,
+          "review_note": "precio muy por debajo de pizzas equivalentes (12.50-13.50) — confirmar, podría ser 12.90 o 13.90"
+        },
+        { "name": "Extras", "price": null, "review": true, "review_note": "línea de ingredientes extra al final de Pizzas, precio no legible" }
+      ]
+    },
+    {
+      "sort_order": 18,
+      "name": "Refrescos",
+      "name_en": "Soft Drinks",
+      "items": [
+        { "name": "Coca Cola", "price": 2.50 },
+        { "name": "Coca Cola Light", "price": 2.50 },
+        { "name": "Fanta Naranja o Limón", "translations": { "en": { "name": "Orange or Lemon" } }, "price": 2.50 },
+        { "name": "Nestea", "price": 2.50 },
+        { "name": "Zumo Minut Maid", "translations": { "en": { "name": "Minut Maid Juice" } }, "price": 2.10 },
+        { "name": "Agua", "translations": { "en": { "name": "Water" } }, "price": 1.50 },
+        { "name": "Aquarius", "price": 2.80 },
+        { "name": "Red Bull", "price": 3.80 },
+        { "name": "Tónica", "translations": { "en": { "name": "Tonic Water" } }, "price": 2.50 }
+      ]
+    },
+    {
+      "sort_order": 19,
+      "name": "Vinos",
+      "name_en": "Wine",
+      "note": "Cortada en la parte superior de la foto 2 — nombres de vinos (Tinto, Rosado, Cava, Prosecco) parcialmente visibles, precios no legibles con confianza. Repetir foto.",
+      "items": [
+        { "name": "Tinto", "translations": { "en": { "name": "Red Wine" } }, "price": null, "review": true },
+        { "name": "Rosado", "description": "De la casa", "translations": { "en": { "name": "Rosé", "description": "House Wine" } }, "price": null, "review": true },
+        { "name": "Cava", "translations": { "en": { "name": "Sparkling Wine" } }, "price": null, "review": true },
+        { "name": "Prosecco", "translations": { "en": { "name": "Sparkling Wine" } }, "price": null, "review": true }
+      ]
+    },
+    {
+      "sort_order": 20,
+      "name": "Sangría",
+      "name_en": "Sangria",
+      "items": [
+        {
+          "name": "De Vino",
+          "translations": { "en": { "name": "Wine Sangria" } },
+          "variants": [
+            { "label": "Copa / Glass", "price": 5.50 },
+            { "label": "1/2 Ltr.", "price": 10.50 },
+            { "label": "1 Ltr.", "price": 17.50 }
+          ]
+        },
+        {
+          "name": "De Cava",
+          "translations": { "en": { "name": "Cava Sangria" } },
+          "variants": [
+            { "label": "Copa / Glass", "price": 4.50 },
+            { "label": "1/2 Ltr.", "price": 11.60 },
+            { "label": "1 Ltr.", "price": 18.80 }
+          ],
+          "review": true,
+          "review_note": "el precio 'Copa' (4.50) es menor que el de la sangría de vino (5.50) siendo de cava — confirmar"
+        }
+      ]
+    },
+    {
+      "sort_order": 21,
+      "name": "Cerveza",
+      "name_en": "Beer",
+      "items": [
+        { "name": "Amstel", "variants": [{ "label": "Caña", "price": 1.50 }, { "label": "Jarra", "price": 2.50 }] },
+        { "name": "Heineken", "variants": [{ "label": "Caña", "price": 1.60 }, { "label": "Jarra", "price": 2.60 }] },
+        {
+          "name": "Cruz Campo",
+          "description": "Gran reserva",
+          "variants": [{ "label": "Caña", "price": 2.60 }, { "label": "Jarra", "price": 3.60 }],
+          "review": true,
+          "review_note": "precios de Cruz Campo Gran Reserva con reflejo, confirmar"
+        },
+        { "name": "Tropical", "description": "Botella 33cl", "price": 1.90 },
+        { "name": "Dorada Pilsen", "description": "Botella 33cl", "price": 1.80 },
+        { "name": "Dorada Especial", "description": "Botella 33cl", "price": 2.10 },
+        { "name": "Heineken (botella)", "description": "Botella 33cl", "price": 1.80 },
+        { "name": "Estrella Galicia", "description": "Botella 33cl", "price": 2.20 },
+        { "name": "1906", "description": "Botella 33cl", "price": 2.70 },
+        { "name": "Sidra Kopparberg", "description": "Botella 33cl", "price": 4.20 },
+        { "name": "Cruz Campo (botella)", "description": "Botella 33cl", "price": 1.50 }
+      ]
+    },
+    {
+      "sort_order": 22,
+      "name": "Whisky, Ginebra, Ron y Vodka",
+      "name_en": "Whisky, Gin, Rum and Vodka",
+      "note": "Cortada en la parte superior de la foto 2 — ningún precio legible con confianza. Repetir foto.",
+      "items": [
+        { "name": "J&B", "price": null, "review": true },
+        { "name": "Johnnie Walker Red", "price": null, "review": true },
+        { "name": "Johnnie Walker Black", "price": null, "review": true },
+        { "name": "Jack Daniel's", "price": null, "review": true },
+        { "name": "Gordon's", "price": null, "review": true },
+        { "name": "Beefeater", "price": null, "review": true },
+        { "name": "Bombay", "price": null, "review": true },
+        { "name": "Arehucas", "price": null, "review": true },
+        { "name": "Ron Miel", "price": null, "review": true },
+        { "name": "Bacardí", "price": null, "review": true },
+        { "name": "Malibu", "price": null, "review": true },
+        { "name": "Havana 7", "price": null, "review": true },
+        { "name": "Smirnoff", "price": null, "review": true }
+      ]
+    },
+    {
+      "sort_order": 23,
+      "name": "Licores",
+      "name_en": "Liqueurs",
+      "note": "Nota en rojo sobre suplemento con hielo/Red Bull visible pero texto exacto y precio no confirmados.",
+      "items": [
+        { "name": "Baileys", "price": 4.80 },
+        { "name": "Tía María", "price": 4.10 },
+        { "name": "Cointreau", "price": 4.10 },
+        { "name": "Jägermeister", "price": 4.10 },
+        { "name": "Licor 43", "price": 4.50 },
+        { "name": "Tequila", "price": 4.10 },
+        { "name": "Licor de Hierbas", "price": 4.10 },
+        { "name": "Sambuca", "price": 4.10 },
+        { "name": "Grappa", "price": 4.10 },
+        { "name": "Limoncello", "price": 4.10 },
+        { "name": "Amaretto", "price": 4.10 },
+        { "name": "Ramazzotti", "price": 4.10 },
+        { "name": "Montenegro", "price": 4.10 },
+        { "name": "Averna", "price": 4.10 }
+      ]
+    },
+    {
+      "sort_order": 24,
+      "name": "Cócteles",
+      "name_en": "Cocktails & Aperitifs",
+      "items": [
+        { "name": "Vodka", "price": 6.50, "review": true, "review_note": "nombre de cóctel probablemente incompleto (¿Vodka Sour/Martini?), confirmar" },
+        { "name": "Americano", "price": 6.50 },
+        { "name": "Campari, Martini Rosso, Soda", "price": 4.90 },
+        { "name": "Bellini", "price": 6.50 },
+        { "name": "Prosecco y zumo de naranja", "translations": { "en": { "name": "Prosecco and orange juice" } }, "price": 5.50 },
+        { "name": "Aperol Spritz", "price": 5.50 },
+        { "name": "Campari Spritz", "price": 5.50 }
+      ]
+    }
+  ]
+}
