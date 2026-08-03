@@ -3,11 +3,12 @@
 Carta digital SaaS multi-tenant para restaurantes — carta pública, panel del
 propietario y panel NovaCore sobre una única aplicación Next.js.
 
-Este README cubre el estado actual del proyecto (Fase 1, bloque 1: estructura
-del proyecto, conexión a Supabase, esquema de base de datos, tipos
-compartidos y autenticación básica). El resto del panel del propietario, la
-carta pública completa, reseñas, QR y el panel NovaCore se añaden en bloques
-posteriores — ver el documento de diseño de la Fase 1 aprobado.
+Este README cubre el estado actual del proyecto: estructura base, conexión a
+Supabase, esquema de base de datos, autenticación y el sistema de diseño
+completo (tokens, 6 temas, componentes reutilizables). El contenido real de
+la carta pública, el CRUD del propietario, reseñas, QR y el panel NovaCore
+se añaden en bloques posteriores — ver el documento de diseño de la Fase 1
+aprobado.
 
 ## Stack
 
@@ -84,6 +85,17 @@ supabase db execute -f supabase/seed.sql
 (Si desarrollas con Supabase local vía `supabase start`, `supabase db reset`
 aplica migraciones **y** `seed.sql` automáticamente.)
 
+### 5.1 (Opcional) Restaurante de demostración
+
+`supabase/seed-demo-note-di-caffe.sql` da de alta un restaurante real (Note
+di Caffé, Los Abrigos — Tenerife) con sus datos verdaderos de contacto y
+horario, pero con categorías y platos **explícitamente marcados como
+demostración** ("Ejemplo — ...", "Producto de demostración — ...") hasta que
+exista la carta oficial. Es idempotente: se puede ejecutar varias veces sin
+duplicar nada. Aplícalo igual que el resto (SQL Editor o
+`supabase db execute -f supabase/seed-demo-note-di-caffe.sql`) para tener
+`/r/note-di-caffe` navegable de inmediato.
+
 ## 6. Crear el primer superadministrador de NovaCore
 
 No hay registro público — ni de propietarios ni de administradores. Para el
@@ -115,13 +127,18 @@ npm run dev
 - `http://localhost:3000/novacore` — panel NovaCore (requiere
   `platform_admin`).
 - `http://localhost:3000/r/[slug]` — carta pública de un restaurante activo
-  (sin sesión).
+  (sin sesión). Con el seed de demostración aplicado: `/r/note-di-caffe`.
+- `http://localhost:3000/novacore/design-system` — catálogo del sistema de
+  diseño (requiere `platform_admin`); acepta `?preset=` (elegante, moderno,
+  minimalista, oscuro, mediterraneo, premium) y `?mode=` (system, light,
+  dark) para navegar los 6 temas sin escribir código.
 
 Para probar el flujo de propietario necesitas, además del usuario en
 `auth.users`, un restaurante y una fila en `restaurant_users` que lo
 vincule con rol `owner` o `staff` — todavía no existe la pantalla de alta en
 `/novacore` (llega en un bloque posterior), así que de momento se crean a
-mano desde el SQL Editor:
+mano desde el SQL Editor (o reutiliza `note-di-caffe` si ya aplicaste el
+seed de demostración):
 
 ```sql
 insert into restaurants (slug, name) values ('mi-restaurante', 'Mi Restaurante');
@@ -135,17 +152,21 @@ where r.slug = 'mi-restaurante' and u.email = 'propietario@tu-dominio.com';
 ## Estructura del proyecto
 
 ```
-app/(public)/r/[slug]/       carta pública — sin login
+app/(public)/r/[slug]/       carta pública — sin login, tema del propio restaurante
 app/(owner)/dashboard/       panel del propietario — auth + rol owner/staff
 app/(admin)/novacore/        panel NovaCore — auth + rol platform_admin
+app/(admin)/novacore/design-system/  catálogo del sistema de diseño
 app/login, app/auth/         formulario de acceso, callback de magic link, sign-out
-features/                    lógica de negocio por dominio (aún por poblar)
-components/{ui,shared}/      componentes reutilizables (aún por poblar)
+features/                    lógica de negocio por dominio (menu/ poblado, resto por venir)
+components/ui/               primitivas del design system (Button, Dialog, Tabs...)
+components/shared/           compuestos de negocio (DishCard, QRCard, SearchBar...)
+lib/theme/                   tokens, 6 presets, ThemeProvider, resolución de tema
 lib/supabase/                clientes de Supabase (server, browser, admin, proxy)
 lib/auth/                    server actions de login/logout + comprobación de roles
 lib/types/database.ts        tipos de la base de datos (formato Supabase generado)
 supabase/migrations/         esquema versionado
 supabase/seed.sql            catálogo de alérgenos UE
+supabase/seed-demo-note-di-caffe.sql  restaurante de demostración (opcional)
 proxy.ts                     Proxy de Next.js 16 — refresca sesión y protege rutas
 ```
 
