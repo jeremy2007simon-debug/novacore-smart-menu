@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { hasRestaurantRole } from "@/lib/auth/roles";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 type OwnerDashboardLayoutProps = {
   children: React.ReactNode;
@@ -26,7 +27,7 @@ export default async function OwnerDashboardLayout({
 
   const { data: restaurant } = await supabase
     .from("restaurants")
-    .select("id")
+    .select("id, name")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -35,5 +36,9 @@ export default async function OwnerDashboardLayout({
   const authorized = await hasRestaurantRole(restaurant.id, ["owner", "staff"]);
   if (!authorized) notFound();
 
-  return <>{children}</>;
+  return (
+    <DashboardShell slug={slug} restaurantName={restaurant.name}>
+      {children}
+    </DashboardShell>
+  );
 }

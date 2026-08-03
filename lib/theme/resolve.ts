@@ -107,3 +107,61 @@ ${block(':root[data-color-mode="dark"]', dark, "dark")}
 ${block(':root[data-color-mode="light"]', light, "light")}
 `.trim();
 }
+
+/**
+ * Igual que resolveThemeCss, pero como objeto de variables CSS planas en
+ * vez de texto — para aplicar un tema a un subárbol concreto vía `style`
+ * inline (p.ej. la vista previa dentro del panel del propietario) sin
+ * tocar `:root` y sin afectar al resto de la página. Solo un modo de
+ * color (no genera el bloque de media query ni el override por atributo,
+ * porque aquí no hay interruptor de claro/oscuro que anular).
+ */
+export function resolveThemeVars(
+  config: RestaurantThemeConfig,
+  mode: "light" | "dark" = "light",
+): Record<string, string> {
+  const preset = PRESETS[config.preset];
+  const primaryOverride = config.overrides?.primaryColor;
+  const tokens = applyOverrides(mode === "dark" ? preset.dark : preset.light, mode, primaryOverride);
+  const radius = RADIUS_SCALES[preset.radiusShape];
+  const status = STATUS_COLORS[mode];
+  const tint = hexToRgbString(preset.dark.bg);
+
+  return {
+    "--nova-color-bg": tokens.bg,
+    "--nova-color-surface": tokens.surface,
+    "--nova-color-surface-raised": tokens.surfaceRaised,
+    "--nova-color-border": tokens.border,
+    "--nova-color-border-strong": tokens.borderStrong,
+    "--nova-color-text": tokens.text,
+    "--nova-color-text-muted": tokens.textMuted,
+    "--nova-color-text-faint": tokens.textFaint,
+    "--nova-color-primary": tokens.primary,
+    "--nova-color-primary-hover": tokens.primaryHover,
+    "--nova-color-primary-foreground": tokens.primaryForeground,
+    "--nova-color-accent": tokens.accent,
+    "--nova-color-accent-foreground": tokens.accentForeground,
+    "--nova-color-focus-ring": tokens.focusRing,
+    "--nova-color-success": status.success,
+    "--nova-color-success-foreground": status.successForeground,
+    "--nova-color-warning": status.warning,
+    "--nova-color-warning-foreground": status.warningForeground,
+    "--nova-color-danger": status.danger,
+    "--nova-color-danger-foreground": status.dangerForeground,
+    "--nova-radius-sm": radius.sm,
+    "--nova-radius-md": radius.md,
+    "--nova-radius-lg": radius.lg,
+    "--nova-shadow-sm": `0 1px 2px 0 rgba(${tint}, 0.06)`,
+    "--nova-shadow-md": `0 4px 12px -2px rgba(${tint}, 0.10), 0 2px 4px -2px rgba(${tint}, 0.06)`,
+    "--nova-shadow-lg": `0 12px 32px -8px rgba(${tint}, 0.18), 0 4px 8px -4px rgba(${tint}, 0.08)`,
+    "--nova-font-display": preset.fontDisplay,
+    "--nova-font-body": preset.fontBody,
+    "--nova-font-mono": FONT_STACKS.mono,
+    "--nova-duration-fast": MOTION.durationFast,
+    "--nova-duration-base": MOTION.durationBase,
+    "--nova-duration-slow": MOTION.durationSlow,
+    "--nova-ease-out": MOTION.easeOut,
+    "--nova-ease-in-out": MOTION.easeInOut,
+    "color-scheme": mode,
+  };
+}
