@@ -6,7 +6,7 @@ import { DesignSystemShowcase } from "@/components/showcase/design-system-showca
 import { cn } from "@/lib/utils/cn";
 
 export const metadata = {
-  title: "Design System — NovaCore",
+  title: "Design System",
 };
 
 const PRESET_IDS = new Set(PRESET_LIST.map((p) => p.id));

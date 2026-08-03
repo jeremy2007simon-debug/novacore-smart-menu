@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Rating } from "@/components/ui/rating";
 import { EmptyState } from "@/components/ui/empty-state";
 import { WriteReviewForm } from "@/components/public/write-review-form";
-import { getPublicMenu } from "@/features/menu/get-public-menu";
+import { getPublicMenu, type PublicMenu } from "@/features/menu/get-public-menu";
 import { formatPrice } from "@/lib/utils/money";
 import type { DishBadge } from "@/lib/types/database";
 
@@ -21,15 +21,49 @@ type DishPageProps = {
   params: Promise<{ slug: string; id: string }>;
 };
 
+// "hidden"/"archived" nunca son visibles para el cliente final, ni por
+// enlace directo: se comportan como si el plato no existiera.
+function findVisibleDish(menu: PublicMenu, id: string) {
+  const dish = menu.dishes.find((d) => d.id === id);
+  if (!dish || dish.status === "hidden" || dish.status === "archived") return null;
+  return dish;
+}
+
+export async function generateMetadata({ params }: DishPageProps) {
+  const { slug, id } = await params;
+  const menu = await getPublicMenu(slug);
+  if (!menu) return {};
+  const dish = findVisibleDish(menu, id);
+  if (!dish) return {};
+
+  const description =
+    dish.short_description ??
+    (dish.ingredients.length > 0
+      ? `${dish.ingredients.join(", ")} — ${formatPrice(dish.price_cents, menu.restaurant.currency)}.`
+      : `Descubre ${dish.name} en la carta de ${menu.restaurant.name}.`);
+  const title = `${dish.name} — ${menu.restaurant.name}`;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: `/r/${slug}/platos/${id}` },
+    openGraph: {
+      title,
+      description,
+      type: "website" as const,
+      url: `/r/${slug}/platos/${id}`,
+      images: dish.image_url ? [{ url: dish.image_url }] : undefined,
+    },
+  };
+}
+
 export default async function DishDetailPage({ params }: DishPageProps) {
   const { slug, id } = await params;
   const menu = await getPublicMenu(slug);
   if (!menu) notFound();
 
-  const dish = menu.dishes.find((d) => d.id === id);
-  // "hidden"/"archived" nunca son visibles para el cliente final, ni por
-  // enlace directo: se comportan como si el plato no existiera.
-  if (!dish || dish.status === "hidden" || dish.status === "archived") notFound();
+  const dish = findVisibleDish(menu, id);
+  if (!dish) notFound();
 
   const soldOut = dish.status === "sold_out";
   const allergenNames = (dish.allergen_codes ?? [])

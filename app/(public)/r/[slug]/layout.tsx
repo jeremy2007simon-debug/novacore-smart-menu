@@ -27,16 +27,35 @@ export async function generateViewport({ params }: { params: Promise<{ slug: str
  * propios, nunca "NovaCore" — apuntando al manifest dinámico de
  * manifest.webmanifest/route.ts en vez del manifest.ts especial de Next
  * (ese no puede leer el slug de la ruta).
+ *
+ * `robots: index/follow` anula aquí el `noindex` por defecto del layout
+ * raíz (app/layout.tsx) — el resto de la app (login, panel del
+ * propietario, panel NovaCore) es privada, pero la carta pública de un
+ * restaurante SÍ debe indexarse.
  */
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const menu = await getPublicMenu(slug);
   if (!menu) return {};
+
+  const description =
+    menu.restaurant.description ?? `Carta digital de ${menu.restaurant.name}. Consulta platos, precios y alérgenos.`;
+
   return {
-    title: menu.restaurant.name,
-    description: menu.restaurant.description ?? undefined,
+    title: { absolute: menu.restaurant.name },
+    description,
     manifest: `/r/${slug}/manifest.webmanifest`,
     appleWebApp: { title: menu.restaurant.name, statusBarStyle: "default" as const },
+    robots: { index: true, follow: true },
+    alternates: { canonical: `/r/${slug}` },
+    openGraph: {
+      title: menu.restaurant.name,
+      description,
+      siteName: menu.restaurant.name,
+      type: "website",
+      url: `/r/${slug}`,
+      images: menu.restaurant.logo_url ? [{ url: menu.restaurant.logo_url }] : undefined,
+    },
   };
 }
 

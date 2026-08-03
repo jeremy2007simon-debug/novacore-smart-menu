@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Panel NovaCore",
+  title: "Panel",
 };
 
 export default function NovaCorePage() {

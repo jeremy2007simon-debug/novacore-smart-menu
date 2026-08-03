@@ -4,14 +4,23 @@ import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { COLOR_MODE_INIT_SCRIPT, ThemeProvider } from "@/lib/theme/theme-provider";
 import { DEFAULT_RESTAURANT_THEME } from "@/lib/theme/types";
+import { publicEnv } from "@/lib/env";
 import "./globals.css";
 
+/**
+ * `robots: noindex` por defecto: es lo correcto para /login, /dashboard y
+ * /novacore (paneles privados, no contenido para buscadores). La carta
+ * pública de cada restaurante lo anula explícitamente en su propio
+ * layout (app/(public)/r/[slug]/layout.tsx) — ahí sí queremos indexar.
+ */
 export const metadata: Metadata = {
+  metadataBase: new URL(publicEnv.NEXT_PUBLIC_SITE_URL),
   title: {
     default: "NovaCore Smart Menu",
     template: "%s · NovaCore Smart Menu",
   },
   description: "Cartas digitales para restaurantes.",
+  robots: { index: false, follow: false },
 };
 
 /**

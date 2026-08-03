@@ -5,7 +5,7 @@ type LoginPageProps = {
 };
 
 export const metadata = {
-  title: "Acceder — NovaCore Smart Menu",
+  title: "Acceder",
 };
 
 export default async function LoginPage(props: LoginPageProps) {
