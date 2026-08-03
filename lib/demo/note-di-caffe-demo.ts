@@ -178,6 +178,29 @@ export const demoQrCodes: QrCode[] = [
   { id: "q5", restaurant_id: demoRestaurant.id, label: "Terraza 1 (antigua)", type: "table", table_number: 9, status: "archived", scan_count: 12, created_at: "2026-01-15T00:00:00Z" },
 ];
 
+export type DemoActivityKind = "price" | "status" | "badge" | "review" | "category" | "settings";
+
+export type DemoActivity = {
+  id: string;
+  kind: DemoActivityKind;
+  message: string;
+  created_at: string;
+};
+
+/**
+ * Registro de actividad de relleno para el "feed" del Resumen: son ejemplos
+ * de acciones plausibles sobre los platos/categorías/reseñas ya existentes,
+ * no hechos reales (igual que las reseñas de demostración).
+ */
+export const demoActivity: DemoActivity[] = [
+  { id: "act1", kind: "status", message: "Marcaste «Vegetal (receta antigua)» como archivado", created_at: "2026-08-02T21:10:00Z" },
+  { id: "act2", kind: "price", message: "Cambiaste el precio de «Diavola» a 12,50 €", created_at: "2026-08-02T18:40:00Z" },
+  { id: "act3", kind: "status", message: "Ocultaste «Irish Coffee»", created_at: "2026-08-02T09:15:00Z" },
+  { id: "act4", kind: "badge", message: "Añadiste la etiqueta Nuevo a «Ensalada de Quinoa»", created_at: "2026-08-01T20:05:00Z" },
+  { id: "act5", kind: "review", message: "Respondiste a la reseña de Cliente demo 3", created_at: "2026-07-30T09:00:00Z" },
+  { id: "act6", kind: "category", message: "Actualizaste el horario de la categoría Platos Calientes", created_at: "2026-07-29T17:30:00Z" },
+];
+
 export const demoAllergens: { id: string; code: string; icon_key: string; name_es: string; name_en: string }[] = [
   { id: "a1", code: "gluten", icon_key: "gluten", name_es: "Cereales con gluten", name_en: "Cereals containing gluten" },
   { id: "a2", code: "crustaceans", icon_key: "crustaceans", name_es: "Crustáceos", name_en: "Crustaceans" },

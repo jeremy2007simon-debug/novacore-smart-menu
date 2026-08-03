@@ -2,53 +2,31 @@ import Link from "next/link";
 import {
   AlertTriangle,
   ArrowRight,
+  Archive,
+  Ban,
+  EyeOff,
   Layers,
   QrCode,
-  ScanLine,
   Star,
   UtensilsCrossed,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { StatTile } from "@/components/dashboard/stat-tile";
+import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { RestaurantStatusToggle } from "@/components/dashboard/restaurant-status-toggle";
 import {
+  demoActivity,
   demoCategories,
   demoDishes,
-  demoQrCodes,
+  demoRestaurant,
   demoReviews,
 } from "@/lib/demo/note-di-caffe-demo";
 
 type OwnerDashboardPageProps = {
   params: Promise<{ slug: string }>;
 };
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  href,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: string | number;
-  href: string;
-}) {
-  return (
-    <Link href={href}>
-      <Card className="nova-transition p-5 hover:border-primary hover:shadow-md">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-            <Icon className="h-5 w-5" aria-hidden="true" />
-          </div>
-          <div>
-            <p className="font-display text-2xl font-semibold leading-none text-foreground">{value}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{label}</p>
-          </div>
-        </div>
-      </Card>
-    </Link>
-  );
-}
 
 /**
  * NOTA — fase de diseño: esta pantalla usa datos de demostración
@@ -59,17 +37,25 @@ function StatCard({
 export default async function OwnerDashboardPage({ params }: OwnerDashboardPageProps) {
   const { slug } = await params;
 
-  const totalDishes = demoDishes.length;
   const availableDishes = demoDishes.filter((d) => d.status === "available").length;
+  const soldOutDishes = demoDishes.filter((d) => d.status === "sold_out").length;
+  const hiddenDishes = demoDishes.filter((d) => d.status === "hidden").length;
   const dishesNeedingReview = demoDishes.filter((d) => d.needs_review);
   const pendingReviews = demoReviews.filter((r) => r.status === "pending").length;
-  const totalScans = demoQrCodes.reduce((sum, qr) => sum + qr.scan_count, 0);
+
+  const ratedDishes = demoDishes.filter((d) => d.rating_count > 0);
+  const totalRatingCount = ratedDishes.reduce((sum, d) => sum + d.rating_count, 0);
+  const avgRating =
+    totalRatingCount > 0
+      ? ratedDishes.reduce((sum, d) => sum + d.avg_rating * d.rating_count, 0) / totalRatingCount
+      : 0;
 
   return (
     <div>
       <PageHeader
         title="Resumen"
         description="Un vistazo rápido a cómo está tu carta hoy."
+        action={<RestaurantStatusToggle initialStatus={demoRestaurant.operating_status} />}
       />
 
       {dishesNeedingReview.length > 0 ? (
@@ -95,31 +81,47 @@ export default async function OwnerDashboardPage({ params }: OwnerDashboardPageP
         </Card>
       ) : null}
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard icon={UtensilsCrossed} label="Platos disponibles" value={`${availableDishes}/${totalDishes}`} href={`/dashboard/${slug}/platos`} />
-        <StatCard icon={Layers} label="Categorías" value={demoCategories.length} href={`/dashboard/${slug}/categorias`} />
-        <StatCard icon={Star} label="Reseñas pendientes" value={pendingReviews} href={`/dashboard/${slug}/resenas`} />
-        <StatCard icon={ScanLine} label="Escaneos QR (total)" value={totalScans} href={`/dashboard/${slug}/qr`} />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <StatTile
+          icon={UtensilsCrossed}
+          label="Productos activos"
+          value={availableDishes}
+          href={`/dashboard/${slug}/platos?status=available`}
+          tone="success"
+        />
+        <StatTile
+          icon={Ban}
+          label="Productos agotados"
+          value={soldOutDishes}
+          href={`/dashboard/${slug}/platos?status=sold_out`}
+          tone="warning"
+        />
+        <StatTile
+          icon={EyeOff}
+          label="Productos ocultos"
+          value={hiddenDishes}
+          href={`/dashboard/${slug}/platos?status=hidden`}
+        />
+        <StatTile icon={Layers} label="Categorías" value={demoCategories.length} href={`/dashboard/${slug}/categorias`} />
+        <StatTile
+          icon={Star}
+          label="Reseñas pendientes"
+          value={pendingReviews}
+          href={`/dashboard/${slug}/resenas`}
+          tone="warning"
+        />
+        <StatTile
+          icon={Star}
+          label="Valoración media"
+          value={avgRating > 0 ? avgRating.toFixed(1) : "—"}
+          href={`/dashboard/${slug}/resenas`}
+        />
       </div>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        <Card className="p-5">
-          <h2 className="font-display text-base font-semibold text-foreground">Platos más valorados</h2>
-          <ul className="mt-3 flex flex-col gap-3">
-            {[...demoDishes]
-              .filter((d) => d.rating_count > 0)
-              .sort((a, b) => b.avg_rating - a.avg_rating)
-              .slice(0, 4)
-              .map((dish) => (
-                <li key={dish.id} className="flex items-center justify-between text-sm">
-                  <span className="text-foreground">{dish.name}</span>
-                  <span className="text-muted-foreground">
-                    ★ {dish.avg_rating.toFixed(1)} ({dish.rating_count})
-                  </span>
-                </li>
-              ))}
-          </ul>
-        </Card>
+      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <ActivityFeed activity={demoActivity} />
+        </div>
 
         <Card className="p-5">
           <h2 className="font-display text-base font-semibold text-foreground">Accesos rápidos</h2>
@@ -135,8 +137,8 @@ export default async function OwnerDashboardPage({ params }: OwnerDashboardPageP
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm" className="justify-start">
-              <Link href={`/dashboard/${slug}/apariencia`}>
-                <Star className="h-4 w-4" /> Cambiar el tema visual
+              <Link href={`/dashboard/${slug}/categorias`}>
+                <Archive className="h-4 w-4" /> Reordenar categorías
               </Link>
             </Button>
           </div>
