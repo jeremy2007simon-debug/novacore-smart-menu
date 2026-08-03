@@ -72,7 +72,13 @@ export const demoCategories: DemoCategory[] = [
   { id: "c6", restaurant_id: demoRestaurant.id, name: "Hamburguesas", icon: null, sort_order: 5, available_from: null, available_to: null, available_days: null, created_at: "2026-08-03T00:00:00Z", dish_count: 5 },
 ];
 
-export type DemoDish = Dish & { category_name: string; image_url: string | null; needs_review?: boolean };
+export type DemoDish = Dish & {
+  category_name: string;
+  image_url: string | null;
+  gallery_urls?: string[];
+  allergen_codes?: string[];
+  needs_review?: boolean;
+};
 
 export const demoDishes: DemoDish[] = [
   { id: "d1", restaurant_id: demoRestaurant.id, category_id: "c1", category_name: "Cafetería", name: "Americano", short_description: null, description: null, ingredients: [], spice_level: null, nutritional_info: null, price_cents: 140, status: "available", badges: [], avg_rating: 0, rating_count: 0, sort_order: 0, created_at: "2026-08-03T00:00:00Z", image_url: null },
@@ -91,9 +97,9 @@ export const demoDishes: DemoDish[] = [
   { id: "d12", restaurant_id: demoRestaurant.id, category_id: "c3", category_name: "Ensaladas y Platos Fríos", name: "Ensalada de Atún", short_description: "Lechuga, tomate, atún, cebolla, aceitunas", description: null, ingredients: ["Lechuga", "Tomate", "Atún", "Cebolla", "Aceitunas"], spice_level: null, nutritional_info: null, price_cents: 990, status: "available", badges: [], avg_rating: 4.3, rating_count: 19, sort_order: 1, created_at: "2026-08-03T00:00:00Z", image_url: null },
   { id: "d13", restaurant_id: demoRestaurant.id, category_id: "c3", category_name: "Ensaladas y Platos Fríos", name: "Carpaccio de Bresaola", short_description: "Bresaola, rúcula, tomates cherry, miel, salsa de limón", description: null, ingredients: ["Bresaola", "Rúcula", "Tomates cherry", "Miel"], spice_level: null, nutritional_info: null, price_cents: 1090, status: "available", badges: ["recommended"], avg_rating: 4.9, rating_count: 41, sort_order: 2, created_at: "2026-08-03T00:00:00Z", image_url: null },
 
-  { id: "d14", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "Margherita", short_description: "Tomate, mozzarella", description: null, ingredients: ["Tomate", "Mozzarella"], spice_level: null, nutritional_info: null, price_cents: 1090, status: "available", badges: ["bestseller"], avg_rating: 4.7, rating_count: 96, sort_order: 0, created_at: "2026-08-03T00:00:00Z", image_url: null },
+  { id: "d14", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "Margherita", short_description: "Tomate, mozzarella", description: null, ingredients: ["Tomate", "Mozzarella"], spice_level: null, nutritional_info: null, price_cents: 1090, status: "available", badges: ["bestseller"], avg_rating: 4.7, rating_count: 96, sort_order: 0, created_at: "2026-08-03T00:00:00Z", image_url: null, allergen_codes: ["gluten", "milk"] },
   { id: "d15", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "Diavola", short_description: "Tomate, mozzarella, salchichón picante", description: null, ingredients: ["Tomate", "Mozzarella", "Salchichón picante"], spice_level: 2, nutritional_info: null, price_cents: 1250, status: "available", badges: ["on_offer"], avg_rating: 4.5, rating_count: 28, sort_order: 1, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d16", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "4 Quesos", short_description: "Tomate, mozzarella, edam, parmesano, roquefort", description: null, ingredients: ["Tomate", "Mozzarella", "Edam", "Parmesano", "Roquefort"], spice_level: null, nutritional_info: null, price_cents: 1250, status: "available", badges: [], avg_rating: 4.6, rating_count: 14, sort_order: 2, created_at: "2026-08-03T00:00:00Z", image_url: null },
+  { id: "d16", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "4 Quesos", short_description: "Tomate, mozzarella, edam, parmesano, roquefort", description: null, ingredients: ["Tomate", "Mozzarella", "Edam", "Parmesano", "Roquefort"], spice_level: null, nutritional_info: null, price_cents: 1250, status: "available", badges: [], avg_rating: 4.6, rating_count: 14, sort_order: 2, created_at: "2026-08-03T00:00:00Z", image_url: null, allergen_codes: ["gluten", "milk"] },
   { id: "d17", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "Strachino", short_description: "Tomate, mozzarella, strachino, jamón, rúcula", description: null, ingredients: ["Tomate", "Mozzarella", "Strachino", "Jamón", "Rúcula"], spice_level: null, nutritional_info: null, price_cents: 890, status: "hidden", badges: [], avg_rating: 0, rating_count: 0, sort_order: 3, created_at: "2026-08-03T00:00:00Z", image_url: null, needs_review: true },
   { id: "d18", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "Vegetal (receta antigua)", short_description: "Verduras salteadas variadas", description: null, ingredients: ["Verduras salteadas"], spice_level: null, nutritional_info: null, price_cents: 1090, status: "archived", badges: [], avg_rating: 4.1, rating_count: 9, sort_order: 4, created_at: "2026-08-03T00:00:00Z", image_url: null },
 

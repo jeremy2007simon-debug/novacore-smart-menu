@@ -162,6 +162,6 @@ export function resolveThemeVars(
     "--nova-duration-slow": MOTION.durationSlow,
     "--nova-ease-out": MOTION.easeOut,
     "--nova-ease-in-out": MOTION.easeInOut,
-    "color-scheme": mode,
+    colorScheme: mode,
   };
 }
