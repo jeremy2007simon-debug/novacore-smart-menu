@@ -25,7 +25,7 @@ function SortableRow({
   currency: string;
   categories: DemoCategory[];
   onEdit: () => void;
-  onQuickUpdate: (patch: Partial<DemoDish>, toastMessage?: string) => void;
+  onQuickUpdate: (patch: Partial<DemoDish>) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: dish.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
@@ -46,7 +46,7 @@ function SortableRow({
       <td className="py-1.5 pr-3">
         <InlineEdit
           value={dish.name}
-          onCommit={(v) => onQuickUpdate({ name: v }, "Nombre actualizado")}
+          onCommit={(v) => onQuickUpdate({ name: v })}
           ariaLabel={`Editar nombre de ${dish.name}`}
           className="text-sm font-medium text-foreground"
         />
@@ -57,7 +57,7 @@ function SortableRow({
           categories={categories}
           onChange={(categoryId) => {
             const category = categories.find((c) => c.id === categoryId);
-            onQuickUpdate({ category_id: categoryId, category_name: category?.name ?? "" }, "Categoría actualizada");
+            onQuickUpdate({ category_id: categoryId, category_name: category?.name ?? "" });
           }}
         />
       </td>
@@ -68,7 +68,7 @@ function SortableRow({
           displayValue={formatPrice(dish.price_cents, currency)}
           onCommit={(v) => {
             const cents = Math.round((parseFloat(v) || 0) * 100);
-            if (cents > 0) onQuickUpdate({ price_cents: cents }, "Precio actualizado");
+            if (cents > 0) onQuickUpdate({ price_cents: cents });
           }}
           ariaLabel={`Editar precio de ${dish.name}`}
           className="text-sm tabular-nums text-foreground"
@@ -78,7 +78,7 @@ function SortableRow({
         <div className="flex flex-wrap items-center gap-1.5">
           <QuickStatusSelect
             status={dish.status}
-            onChange={(status) => onQuickUpdate({ status }, "Estado actualizado")}
+            onChange={(status) => onQuickUpdate({ status })}
           />
           {dish.needs_review ? <NeedsReviewBadge /> : null}
         </div>
@@ -94,14 +94,11 @@ function SortableRow({
         <FeatureToggleButton
           active={isRecommended}
           onToggle={() =>
-            onQuickUpdate(
-              {
-                badges: isRecommended
-                  ? dish.badges.filter((b) => b !== "recommended")
-                  : [...dish.badges, "recommended"],
-              },
-              isRecommended ? "Quitado de recomendados" : "Marcado como recomendado",
-            )
+            onQuickUpdate({
+              badges: isRecommended
+                ? dish.badges.filter((b) => b !== "recommended")
+                : [...dish.badges, "recommended"],
+            })
           }
         />
       </td>
@@ -127,7 +124,7 @@ export function DishTable({
   categories: DemoCategory[];
   onReorder: (next: DemoDish[]) => void;
   onEdit: (dish: DemoDish) => void;
-  onQuickUpdate: (id: string, patch: Partial<DemoDish>, toastMessage?: string) => void;
+  onQuickUpdate: (id: string, patch: Partial<DemoDish>) => void;
 }) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
@@ -168,7 +165,7 @@ export function DishTable({
                   currency={currency}
                   categories={categories}
                   onEdit={() => onEdit(dish)}
-                  onQuickUpdate={(patch, toastMessage) => onQuickUpdate(dish.id, patch, toastMessage)}
+                  onQuickUpdate={(patch) => onQuickUpdate(dish.id, patch)}
                 />
               ))}
             </tbody>

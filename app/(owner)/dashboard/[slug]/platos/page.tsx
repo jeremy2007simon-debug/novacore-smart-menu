@@ -12,7 +12,12 @@ import { SearchBar } from "@/components/shared/search-bar";
 import { DishTable } from "@/components/dashboard/dish-table";
 import { DishGrid } from "@/components/dashboard/dish-grid";
 import { DishEditDrawer } from "@/components/dashboard/dish-edit-drawer";
-import { showToast } from "@/components/ui/toast";
+import { UndoRedoControls } from "@/components/dashboard/undo-redo-controls";
+import { useUndoableState, useUndoRedoShortcuts } from "@/lib/undo/use-undoable-state";
+import { useSaveStatus } from "@/lib/autosave/save-status-context";
+import { simulatePersist } from "@/lib/autosave/simulate-persist";
+import { useActivity } from "@/lib/activity/activity-context";
+import { describeDishChange } from "@/lib/activity/describe-dish-change";
 import { formatPrice } from "@/lib/utils/money";
 import { demoCategories, demoDishes, demoRestaurant, type DemoDish } from "@/lib/demo/note-di-caffe-demo";
 import type { DishBadge, DishStatus } from "@/lib/types/database";
@@ -46,8 +51,12 @@ function matchesQuery(dish: DemoDish, currency: string, query: string): boolean 
 function PlatosContent() {
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get("status");
+  const { runAutosave } = useSaveStatus();
+  const { logActivity } = useActivity();
 
-  const [dishes, setDishes] = useState<DemoDish[]>(demoDishes);
+  const { value: dishes, set: setDishes, undo, redo, canUndo, canRedo } = useUndoableState<DemoDish[]>(demoDishes);
+  useUndoRedoShortcuts(undo, redo);
+
   const [view, setView] = useState<ViewMode>("grid");
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -58,7 +67,8 @@ function PlatosContent() {
     }
     return initial;
   });
-  const [editing, setEditing] = useState<DemoDish | null | undefined>(undefined); // undefined = closed
+  const [editingId, setEditingId] = useState<string | undefined>(undefined); // undefined = closed
+  const editing = dishes.find((d) => d.id === editingId);
 
   function toggleChip(value: string) {
     setActiveChips((prev) => {
@@ -90,39 +100,70 @@ function PlatosContent() {
     // estable: solo se compara explícitamente cuando AMBOS elementos están
     // en el conjunto reordenado, cualquier otro par devuelve 0.
     const newOrder = new Map(next.map((d, i) => [d.id, i]));
-    setDishes((prev) =>
-      [...prev].sort((a, b) => {
-        const ai = newOrder.get(a.id);
-        const bi = newOrder.get(b.id);
-        if (ai === undefined || bi === undefined) return 0;
-        return ai - bi;
-      }),
-    );
-  }
-
-  function handleQuickUpdate(id: string, patch: Partial<DemoDish>, toastMessage?: string) {
-    setDishes((prev) => prev.map((d) => (d.id === id ? { ...d, ...patch } : d)));
-    if (toastMessage) showToast.success(toastMessage);
-  }
-
-  function handleSave(dish: DemoDish) {
-    setDishes((prev) => {
-      const exists = prev.some((d) => d.id === dish.id);
-      return exists ? prev.map((d) => (d.id === dish.id ? dish : d)) : [...prev, dish];
+    const reordered = [...dishes].sort((a, b) => {
+      const ai = newOrder.get(a.id);
+      const bi = newOrder.get(b.id);
+      if (ai === undefined || bi === undefined) return 0;
+      return ai - bi;
     });
-    showToast.success(editing ? "Plato actualizado" : "Plato añadido", dish.name);
-    setEditing(undefined);
+    setDishes(reordered);
+    logActivity("order", "reordenó los platos");
+    runAutosave(() => simulatePersist());
+  }
+
+  function handleQuickUpdate(id: string, patch: Partial<DemoDish>) {
+    const dish = dishes.find((d) => d.id === id);
+    if (!dish) return;
+    const description = describeDishChange(dish, patch, demoRestaurant.currency);
+    setDishes(dishes.map((d) => (d.id === id ? { ...d, ...patch } : d)));
+    if (description) {
+      logActivity(description.kind, description.message);
+      runAutosave(() => simulatePersist());
+    }
+  }
+
+  function handleCreateDish() {
+    const category = demoCategories[0];
+    const draft: DemoDish = {
+      id: `new-${Date.now()}`,
+      restaurant_id: demoRestaurant.id,
+      category_id: category?.id ?? null,
+      category_name: category?.name ?? "",
+      name: "Nuevo plato",
+      short_description: null,
+      description: null,
+      ingredients: [],
+      allergen_codes: [],
+      spice_level: null,
+      nutritional_info: null,
+      price_cents: 0,
+      status: "hidden",
+      badges: [],
+      avg_rating: 0,
+      rating_count: 0,
+      sort_order: dishes.length,
+      created_at: new Date().toISOString(),
+      image_url: null,
+      gallery_urls: [],
+    };
+    setDishes([...dishes, draft]);
+    logActivity("name", `añadió el plato «${draft.name}»`);
+    runAutosave(() => simulatePersist());
+    setEditingId(draft.id);
   }
 
   return (
     <div>
       <PageHeader
         title="Platos"
-        description={`${dishes.length} platos en total · edita precio, estado, categoría y destacados directamente desde la lista.`}
+        description={`${dishes.length} platos en total · cada cambio se guarda solo, directamente desde la lista.`}
         action={
-          <Button onClick={() => setEditing(null)}>
-            <Plus className="h-4 w-4" /> Nuevo plato
-          </Button>
+          <div className="flex items-center gap-2">
+            <UndoRedoControls canUndo={canUndo} canRedo={canRedo} onUndo={undo} onRedo={redo} />
+            <Button onClick={handleCreateDish}>
+              <Plus className="h-4 w-4" /> Nuevo plato
+            </Button>
+          </div>
         }
       />
 
@@ -198,7 +239,7 @@ function PlatosContent() {
           currency={demoRestaurant.currency}
           categories={demoCategories}
           onReorder={handleReorder}
-          onEdit={setEditing}
+          onEdit={(dish) => setEditingId(dish.id)}
           onQuickUpdate={handleQuickUpdate}
         />
       ) : (
@@ -207,19 +248,21 @@ function PlatosContent() {
           currency={demoRestaurant.currency}
           categories={demoCategories}
           onReorder={handleReorder}
-          onEdit={setEditing}
+          onEdit={(dish) => setEditingId(dish.id)}
           onQuickUpdate={handleQuickUpdate}
         />
       )}
 
-      <DishEditDrawer
-        key={editing?.id ?? "new"}
-        open={editing !== undefined}
-        onOpenChange={(open) => !open && setEditing(undefined)}
-        dish={editing ?? null}
-        categories={demoCategories}
-        onSave={handleSave}
-      />
+      {editing ? (
+        <DishEditDrawer
+          key={editing.id}
+          open={editingId !== undefined}
+          onOpenChange={(open) => !open && setEditingId(undefined)}
+          dish={editing}
+          categories={demoCategories}
+          onFieldChange={(patch) => handleQuickUpdate(editing.id, patch)}
+        />
+      ) : null}
     </div>
   );
 }

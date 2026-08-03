@@ -33,7 +33,7 @@ export function OwnerDishCard({
   currency: string;
   categories: DemoCategory[];
   onEdit: () => void;
-  onQuickUpdate: (patch: Partial<DemoDish>, toastMessage?: string) => void;
+  onQuickUpdate: (patch: Partial<DemoDish>) => void;
   dragHandleProps?: React.HTMLAttributes<HTMLButtonElement>;
   isDragging?: boolean;
   style?: React.CSSProperties;
@@ -71,7 +71,7 @@ export function OwnerDishCard({
         <div className="flex items-start justify-between gap-2">
           <InlineEdit
             value={dish.name}
-            onCommit={(v) => onQuickUpdate({ name: v }, "Nombre actualizado")}
+            onCommit={(v) => onQuickUpdate({ name: v })}
             ariaLabel={`Editar nombre de ${dish.name}`}
             className="truncate text-sm font-semibold text-foreground"
           />
@@ -81,7 +81,7 @@ export function OwnerDishCard({
             displayValue={formatPrice(dish.price_cents, currency)}
             onCommit={(v) => {
               const cents = Math.round((parseFloat(v) || 0) * 100);
-              if (cents > 0) onQuickUpdate({ price_cents: cents }, "Precio actualizado");
+              if (cents > 0) onQuickUpdate({ price_cents: cents });
             }}
             ariaLabel={`Editar precio de ${dish.name}`}
             className="whitespace-nowrap text-sm font-semibold tabular-nums text-foreground"
@@ -94,7 +94,7 @@ export function OwnerDishCard({
             categories={categories}
             onChange={(categoryId) => {
               const category = categories.find((c) => c.id === categoryId);
-              onQuickUpdate({ category_id: categoryId, category_name: category?.name ?? "" }, "Categoría actualizada");
+              onQuickUpdate({ category_id: categoryId, category_name: category?.name ?? "" });
             }}
           />
         </div>
@@ -104,7 +104,7 @@ export function OwnerDishCard({
         ) : null}
 
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
-          <QuickStatusSelect status={dish.status} onChange={(status) => onQuickUpdate({ status }, "Estado actualizado")} />
+          <QuickStatusSelect status={dish.status} onChange={(status) => onQuickUpdate({ status })} />
           {dish.needs_review ? <NeedsReviewBadge /> : null}
           {dish.badges.map((badge) => (
             <Badge key={badge} variant="accent">
@@ -118,14 +118,11 @@ export function OwnerDishCard({
         <FeatureToggleButton
           active={isRecommended}
           onToggle={() =>
-            onQuickUpdate(
-              {
-                badges: isRecommended
-                  ? dish.badges.filter((b) => b !== "recommended")
-                  : [...dish.badges, "recommended"],
-              },
-              isRecommended ? "Quitado de recomendados" : "Marcado como recomendado",
-            )
+            onQuickUpdate({
+              badges: isRecommended
+                ? dish.badges.filter((b) => b !== "recommended")
+                : [...dish.badges, "recommended"],
+            })
           }
         />
         <Button variant="ghost" size="icon" onClick={onEdit} aria-label={`Editar ${dish.name}`}>

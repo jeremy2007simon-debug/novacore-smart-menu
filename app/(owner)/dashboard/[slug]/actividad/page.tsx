@@ -1,22 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { Euro, EyeOff, History, Layers, MessageSquare, Settings, Tag } from "lucide-react";
+import { History } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ACTIVITY_KIND_ICON } from "@/components/dashboard/activity-kind-icon";
 import { useActivity } from "@/lib/activity/activity-context";
 import { formatRelativeTime } from "@/lib/utils/time";
-import type { DemoActivityKind } from "@/lib/demo/note-di-caffe-demo";
-
-const KIND_ICON: Record<DemoActivityKind, React.ElementType> = {
-  price: Euro,
-  status: EyeOff,
-  badge: Tag,
-  review: MessageSquare,
-  category: Layers,
-  settings: Settings,
-};
 
 function dayLabel(iso: string, now: Date): string {
   const date = new Date(iso);
@@ -61,7 +52,7 @@ export default function ActividadPage() {
               <Card className="p-5">
                 <ul className="flex flex-col gap-4">
                   {items.map((item) => {
-                    const Icon = KIND_ICON[item.kind];
+                    const Icon = ACTIVITY_KIND_ICON[item.kind];
                     return (
                       <li key={item.id} className="flex items-start gap-3">
                         <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-raised text-muted-foreground">

@@ -17,7 +17,7 @@ function SortableCard({
   currency: string;
   categories: DemoCategory[];
   onEdit: () => void;
-  onQuickUpdate: (patch: Partial<DemoDish>, toastMessage?: string) => void;
+  onQuickUpdate: (patch: Partial<DemoDish>) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: dish.id });
 
@@ -49,7 +49,7 @@ export function DishGrid({
   categories: DemoCategory[];
   onReorder: (next: DemoDish[]) => void;
   onEdit: (dish: DemoDish) => void;
-  onQuickUpdate: (id: string, patch: Partial<DemoDish>, toastMessage?: string) => void;
+  onQuickUpdate: (id: string, patch: Partial<DemoDish>) => void;
 }) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
@@ -72,7 +72,7 @@ export function DishGrid({
               currency={currency}
               categories={categories}
               onEdit={() => onEdit(dish)}
-              onQuickUpdate={(patch, toastMessage) => onQuickUpdate(dish.id, patch, toastMessage)}
+              onQuickUpdate={(patch) => onQuickUpdate(dish.id, patch)}
             />
           ))}
         </div>

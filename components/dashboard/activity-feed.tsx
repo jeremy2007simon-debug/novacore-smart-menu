@@ -1,16 +1,7 @@
-import { Euro, EyeOff, Layers, MessageSquare, Settings, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { ACTIVITY_KIND_ICON } from "./activity-kind-icon";
 import { formatRelativeTime } from "@/lib/utils/time";
-import type { DemoActivity, DemoActivityKind } from "@/lib/demo/note-di-caffe-demo";
-
-const KIND_ICON: Record<DemoActivityKind, React.ElementType> = {
-  price: Euro,
-  status: EyeOff,
-  badge: Tag,
-  review: MessageSquare,
-  category: Layers,
-  settings: Settings,
-};
+import type { DemoActivity } from "@/lib/demo/note-di-caffe-demo";
 
 export function ActivityFeed({
   activity,
@@ -24,7 +15,7 @@ export function ActivityFeed({
       <h2 className="font-display text-base font-semibold text-foreground">{title}</h2>
       <ul className="mt-4 flex flex-col gap-4">
         {activity.map((item) => {
-          const Icon = KIND_ICON[item.kind];
+          const Icon = ACTIVITY_KIND_ICON[item.kind];
           return (
             <li key={item.id} className="flex items-start gap-3">
               <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-raised text-muted-foreground">

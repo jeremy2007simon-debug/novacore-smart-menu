@@ -184,7 +184,19 @@ export const demoQrCodes: QrCode[] = [
   { id: "q5", restaurant_id: demoRestaurant.id, label: "Terraza 1 (antigua)", type: "table", table_number: 9, status: "archived", scan_count: 12, created_at: "2026-01-15T00:00:00Z" },
 ];
 
-export type DemoActivityKind = "price" | "status" | "badge" | "review" | "category" | "settings";
+export type DemoActivityKind =
+  | "name"
+  | "price"
+  | "description"
+  | "status"
+  | "category"
+  | "order"
+  | "badge"
+  | "image"
+  | "review"
+  | "settings"
+  | "theme"
+  | "schedule";
 
 export type DemoActivity = {
   id: string;
