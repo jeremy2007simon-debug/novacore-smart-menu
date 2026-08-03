@@ -26,6 +26,11 @@ export default function CategoriasPage() {
     setEditing(undefined);
   }
 
+  function handleRename(id: string, name: string) {
+    setCategories((prev) => prev.map((c) => (c.id === id ? { ...c, name } : c)));
+    showToast.success("Nombre actualizado");
+  }
+
   return (
     <div>
       <PageHeader
@@ -39,7 +44,7 @@ export default function CategoriasPage() {
       />
 
       <div className="max-w-xl">
-        <CategoryList categories={categories} onReorder={handleReorder} onEdit={setEditing} />
+        <CategoryList categories={categories} onReorder={handleReorder} onEdit={setEditing} onRename={handleRename} />
       </div>
 
       <CategoryEditDialog
