@@ -1,4 +1,4 @@
-import type { Category, Dish, Review } from "@/lib/types/database";
+import type { Category, Dish, Review, RestaurantUserRole } from "@/lib/types/database";
 
 /**
  * Tipos e identificador compartidos entre los datos de demostración
@@ -42,5 +42,16 @@ export type DemoActivity = {
   actor: string;
   /** Verbo + complemento, sin el actor delante — se renderiza como `${actor} ${message}`. */
   message: string;
+  created_at: string;
+};
+
+export type DemoTeamMemberStatus = "active" | "invited";
+
+export type DemoTeamMember = {
+  id: string;
+  name: string;
+  email: string;
+  role: RestaurantUserRole;
+  status: DemoTeamMemberStatus;
   created_at: string;
 };

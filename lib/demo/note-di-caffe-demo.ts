@@ -1,8 +1,15 @@
 import type { QrCode, Restaurant } from "@/lib/types/database";
 import { DEMO_RESTAURANT_ID } from "@/lib/demo/types";
-import type { DemoActivity, DemoActivityKind, DemoCategory, DemoDish, DemoReview } from "@/lib/demo/types";
+import type {
+  DemoActivity,
+  DemoActivityKind,
+  DemoCategory,
+  DemoDish,
+  DemoReview,
+  DemoTeamMember,
+} from "@/lib/demo/types";
 import { demoCategories, demoDishes } from "@/lib/demo/note-di-caffe-menu-data";
-export type { DemoActivity, DemoActivityKind, DemoCategory, DemoDish, DemoReview };
+export type { DemoActivity, DemoActivityKind, DemoCategory, DemoDish, DemoReview, DemoTeamMember };
 export { demoCategories, demoDishes };
 
 /**
@@ -139,6 +146,18 @@ export const demoQrCodes: QrCode[] = [
 
 /** Persona que realiza las acciones en esta sesión de demostración. */
 export const CURRENT_ACTOR = "Jeremy";
+
+/**
+ * Equipo de relleno explícitamente genérico (igual que las reseñas y la
+ * actividad de demostración) — no son empleados reales de Note di Caffé.
+ * Refleja la tabla real `restaurant_users` (roles "owner"/"staff"), a la
+ * espera de que haya invitaciones reales por email con Supabase Auth.
+ */
+export const demoTeamMembers: DemoTeamMember[] = [
+  { id: "m1", name: CURRENT_ACTOR, email: "jeremy@notedicaffe.example", role: "owner", status: "active", created_at: "2026-01-10T00:00:00Z" },
+  { id: "m2", name: "Marta Sánchez", email: "marta@notedicaffe.example", role: "staff", status: "active", created_at: "2026-03-02T00:00:00Z" },
+  { id: "m3", name: "Carlos Pérez", email: "carlos@notedicaffe.example", role: "staff", status: "invited", created_at: "2026-08-01T00:00:00Z" },
+];
 
 /**
  * Registro de actividad de relleno para el "feed" del Resumen: son ejemplos
