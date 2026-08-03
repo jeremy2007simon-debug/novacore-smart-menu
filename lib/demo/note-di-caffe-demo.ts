@@ -1,28 +1,29 @@
-import type {
-  Category,
-  Dish,
-  QrCode,
-  Restaurant,
-  Review,
-} from "@/lib/types/database";
+import type { QrCode, Restaurant } from "@/lib/types/database";
+import { DEMO_RESTAURANT_ID } from "@/lib/demo/types";
+import type { DemoActivity, DemoActivityKind, DemoCategory, DemoDish, DemoReview } from "@/lib/demo/types";
+import { demoCategories, demoDishes } from "@/lib/demo/note-di-caffe-menu-data";
+export type { DemoActivity, DemoActivityKind, DemoCategory, DemoDish, DemoReview };
+export { demoCategories, demoDishes };
 
 /**
- * Datos de demostración para diseñar el panel del propietario ANTES de
- * conectarlo a Supabase (decisión explícita: revisar la experiencia con
- * datos de mentira, sin tocar la base de datos todavía).
+ * Datos de demostración para el panel del propietario y la carta pública,
+ * ANTES de conectarlos a Supabase (decisión explícita: revisar la
+ * experiencia con datos de mentira, sin tocar la base de datos todavía).
  *
- * Los platos/categorías/precios son un subconjunto real, curado a mano,
- * de la carta que ya importamos en
- * supabase/demo-data/note-di-caffe-menu.json — no son inventados, pero
- * esta vez sí se han elegido a propósito los estados (disponible,
- * agotado, oculto, archivado) para poder enseñar el panel completo.
+ * Las categorías y platos son la carta REAL completa de Note di Caffé
+ * (25 categorías, 157 platos), generada automáticamente por
+ * scripts/generate-demo-panel-data.py a partir de
+ * supabase/demo-data/note-di-caffe-menu.json — la misma fuente que
+ * alimenta el seed SQL, así que panel y base de datos real coincidirán.
+ * Este archivo solo reexporta ese resultado (ver más abajo) para no
+ * cambiar la ruta de import que usa el resto del proyecto.
  *
  * Las reseñas sí son contenido de relleno explícitamente genérico
  * (nunca se ha dicho que sean reseñas reales de clientes).
  */
 
 export const demoRestaurant: Restaurant = {
-  id: "00000000-0000-0000-0000-000000000001",
+  id: DEMO_RESTAURANT_ID,
   slug: "note-di-caffe",
   name: "Note di Caffé",
   logo_url: null,
@@ -61,60 +62,12 @@ export const demoRestaurant: Restaurant = {
   created_at: "2026-08-03T00:00:00Z",
 };
 
-export type DemoCategory = Category & { dish_count: number };
-
-export const demoCategories: DemoCategory[] = [
-  { id: "c1", restaurant_id: demoRestaurant.id, name: "Cafetería", icon: null, sort_order: 0, available_from: null, available_to: null, available_days: null, created_at: "2026-08-03T00:00:00Z", dish_count: 6 },
-  { id: "c2", restaurant_id: demoRestaurant.id, name: "Crepes Salados", icon: null, sort_order: 1, available_from: null, available_to: null, available_days: null, created_at: "2026-08-03T00:00:00Z", dish_count: 4 },
-  { id: "c3", restaurant_id: demoRestaurant.id, name: "Ensaladas y Platos Fríos", icon: null, sort_order: 2, available_from: null, available_to: null, available_days: null, created_at: "2026-08-03T00:00:00Z", dish_count: 7 },
-  { id: "c4", restaurant_id: demoRestaurant.id, name: "Pizzas", icon: null, sort_order: 3, available_from: null, available_to: null, available_days: null, created_at: "2026-08-03T00:00:00Z", dish_count: 15 },
-  { id: "c5", restaurant_id: demoRestaurant.id, name: "Platos Calientes", icon: null, sort_order: 4, available_from: "13:00", available_to: "16:00", available_days: null, created_at: "2026-08-03T00:00:00Z", dish_count: 7 },
-  { id: "c6", restaurant_id: demoRestaurant.id, name: "Hamburguesas", icon: null, sort_order: 5, available_from: null, available_to: null, available_days: null, created_at: "2026-08-03T00:00:00Z", dish_count: 5 },
-];
-
-export type DemoDish = Dish & {
-  category_name: string;
-  image_url: string | null;
-  gallery_urls?: string[];
-  allergen_codes?: string[];
-  needs_review?: boolean;
-};
-
-export const demoDishes: DemoDish[] = [
-  { id: "d1", restaurant_id: demoRestaurant.id, category_id: "c1", category_name: "Cafetería", name: "Americano", short_description: null, description: null, ingredients: [], spice_level: null, nutritional_info: null, price_cents: 140, status: "available", badges: [], avg_rating: 0, rating_count: 0, sort_order: 0, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d2", restaurant_id: demoRestaurant.id, category_id: "c1", category_name: "Cafetería", name: "Cappuccino", short_description: null, description: null, ingredients: [], spice_level: null, nutritional_info: null, price_cents: 160, status: "available", badges: ["bestseller"], avg_rating: 4.8, rating_count: 34, sort_order: 1, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d3", restaurant_id: demoRestaurant.id, category_id: "c1", category_name: "Cafetería", name: "Barraquito", short_description: null, description: null, ingredients: [], spice_level: null, nutritional_info: null, price_cents: 170, status: "available", badges: ["recommended"], avg_rating: 4.9, rating_count: 51, sort_order: 2, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d4", restaurant_id: demoRestaurant.id, category_id: "c1", category_name: "Cafetería", name: "Goloso", short_description: "Brandy, chocolate y nata", description: null, ingredients: ["Brandy", "Chocolate", "Nata"], spice_level: null, nutritional_info: null, price_cents: 550, status: "available", badges: [], avg_rating: 0, rating_count: 0, sort_order: 3, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d5", restaurant_id: demoRestaurant.id, category_id: "c1", category_name: "Cafetería", name: "Lubumba", short_description: "Leche condensada, café, chocolate y nata", description: null, ingredients: ["Leche condensada", "Café", "Chocolate", "Nata"], spice_level: null, nutritional_info: null, price_cents: 550, status: "hidden", badges: [], avg_rating: 0, rating_count: 0, sort_order: 4, created_at: "2026-08-03T00:00:00Z", image_url: null, needs_review: true },
-  { id: "d6", restaurant_id: demoRestaurant.id, category_id: "c1", category_name: "Cafetería", name: "Irish Coffee", short_description: null, description: null, ingredients: [], spice_level: null, nutritional_info: null, price_cents: 310, status: "hidden", badges: [], avg_rating: 0, rating_count: 0, sort_order: 5, created_at: "2026-08-03T00:00:00Z", image_url: null },
-
-  { id: "d7", restaurant_id: demoRestaurant.id, category_id: "c2", category_name: "Crepes Salados", name: "Jamón y Queso", short_description: null, description: null, ingredients: ["Jamón", "Queso"], spice_level: null, nutritional_info: null, price_cents: 650, status: "available", badges: [], avg_rating: 4.5, rating_count: 12, sort_order: 0, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d8", restaurant_id: demoRestaurant.id, category_id: "c2", category_name: "Crepes Salados", name: "Serrano y Queso", short_description: null, description: null, ingredients: ["Jamón Serrano", "Queso"], spice_level: null, nutritional_info: null, price_cents: 740, status: "available", badges: [], avg_rating: 4.6, rating_count: 8, sort_order: 1, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d9", restaurant_id: demoRestaurant.id, category_id: "c2", category_name: "Crepes Salados", name: "Salmón y Brie", short_description: null, description: null, ingredients: ["Salmón", "Brie"], spice_level: null, nutritional_info: null, price_cents: 930, status: "sold_out", badges: ["recommended"], avg_rating: 4.9, rating_count: 22, sort_order: 2, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d10", restaurant_id: demoRestaurant.id, category_id: "c2", category_name: "Crepes Salados", name: "Note di Caffè", short_description: "Pollo, mozzarella, ensalada", description: null, ingredients: ["Pollo", "Mozzarella", "Ensalada"], spice_level: null, nutritional_info: null, price_cents: 930, status: "available", badges: [], avg_rating: 0, rating_count: 0, sort_order: 3, created_at: "2026-08-03T00:00:00Z", image_url: null },
-
-  { id: "d11", restaurant_id: demoRestaurant.id, category_id: "c3", category_name: "Ensaladas y Platos Fríos", name: "Ensalada de Quinoa", short_description: "Quinoa, lechuga, tomate, zanahoria, pepino, muesli con vinagre balsámico", description: null, ingredients: ["Quinoa", "Lechuga", "Tomate", "Zanahoria", "Pepino", "Muesli"], spice_level: null, nutritional_info: null, price_cents: 990, status: "available", badges: ["new"], avg_rating: 4.4, rating_count: 6, sort_order: 0, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d12", restaurant_id: demoRestaurant.id, category_id: "c3", category_name: "Ensaladas y Platos Fríos", name: "Ensalada de Atún", short_description: "Lechuga, tomate, atún, cebolla, aceitunas", description: null, ingredients: ["Lechuga", "Tomate", "Atún", "Cebolla", "Aceitunas"], spice_level: null, nutritional_info: null, price_cents: 990, status: "available", badges: [], avg_rating: 4.3, rating_count: 19, sort_order: 1, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d13", restaurant_id: demoRestaurant.id, category_id: "c3", category_name: "Ensaladas y Platos Fríos", name: "Carpaccio de Bresaola", short_description: "Bresaola, rúcula, tomates cherry, miel, salsa de limón", description: null, ingredients: ["Bresaola", "Rúcula", "Tomates cherry", "Miel"], spice_level: null, nutritional_info: null, price_cents: 1090, status: "available", badges: ["recommended"], avg_rating: 4.9, rating_count: 41, sort_order: 2, created_at: "2026-08-03T00:00:00Z", image_url: null },
-
-  { id: "d14", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "Margherita", short_description: "Tomate, mozzarella", description: null, ingredients: ["Tomate", "Mozzarella"], spice_level: null, nutritional_info: null, price_cents: 1090, status: "available", badges: ["bestseller"], avg_rating: 4.7, rating_count: 96, sort_order: 0, created_at: "2026-08-03T00:00:00Z", image_url: null, allergen_codes: ["gluten", "milk"] },
-  { id: "d15", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "Diavola", short_description: "Tomate, mozzarella, salchichón picante", description: null, ingredients: ["Tomate", "Mozzarella", "Salchichón picante"], spice_level: 2, nutritional_info: null, price_cents: 1250, status: "available", badges: ["on_offer"], avg_rating: 4.5, rating_count: 28, sort_order: 1, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d16", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "4 Quesos", short_description: "Tomate, mozzarella, edam, parmesano, roquefort", description: null, ingredients: ["Tomate", "Mozzarella", "Edam", "Parmesano", "Roquefort"], spice_level: null, nutritional_info: null, price_cents: 1250, status: "available", badges: [], avg_rating: 4.6, rating_count: 14, sort_order: 2, created_at: "2026-08-03T00:00:00Z", image_url: null, allergen_codes: ["gluten", "milk"] },
-  { id: "d17", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "Strachino", short_description: "Tomate, mozzarella, strachino, jamón, rúcula", description: null, ingredients: ["Tomate", "Mozzarella", "Strachino", "Jamón", "Rúcula"], spice_level: null, nutritional_info: null, price_cents: 890, status: "hidden", badges: [], avg_rating: 0, rating_count: 0, sort_order: 3, created_at: "2026-08-03T00:00:00Z", image_url: null, needs_review: true },
-  { id: "d18", restaurant_id: demoRestaurant.id, category_id: "c4", category_name: "Pizzas", name: "Vegetal (receta antigua)", short_description: "Verduras salteadas variadas", description: null, ingredients: ["Verduras salteadas"], spice_level: null, nutritional_info: null, price_cents: 1090, status: "archived", badges: [], avg_rating: 4.1, rating_count: 9, sort_order: 4, created_at: "2026-08-03T00:00:00Z", image_url: null },
-
-  { id: "d19", restaurant_id: demoRestaurant.id, category_id: "c6", category_name: "Hamburguesas", name: "200gr. de Carne", short_description: "Lechuga, tomate, queso", description: null, ingredients: ["Carne 200gr", "Lechuga", "Tomate", "Queso"], spice_level: null, nutritional_info: null, price_cents: 720, status: "available", badges: [], avg_rating: 4.5, rating_count: 33, sort_order: 0, created_at: "2026-08-03T00:00:00Z", image_url: null },
-  { id: "d20", restaurant_id: demoRestaurant.id, category_id: "c6", category_name: "Hamburguesas", name: "Hamburguesa Americana", short_description: null, description: null, ingredients: [], spice_level: null, nutritional_info: null, price_cents: 890, status: "sold_out", badges: ["bestseller"], avg_rating: 4.8, rating_count: 47, sort_order: 1, created_at: "2026-08-03T00:00:00Z", image_url: null },
-];
-
-export type DemoReview = Review & { dish_name: string | null; reported?: boolean };
-
 export const demoReviews: DemoReview[] = [
   {
     id: "r1",
     restaurant_id: demoRestaurant.id,
     target_type: "dish",
-    dish_id: "d3",
+    dish_id: "d7",
     dish_name: "Barraquito",
     author_name: "Cliente demo 1",
     rating: 5,
@@ -146,7 +99,7 @@ export const demoReviews: DemoReview[] = [
     id: "r3",
     restaurant_id: demoRestaurant.id,
     target_type: "dish",
-    dish_id: "d14",
+    dish_id: "d100",
     dish_name: "Margherita",
     author_name: "Cliente demo 3",
     rating: 5,
@@ -162,7 +115,7 @@ export const demoReviews: DemoReview[] = [
     id: "r4",
     restaurant_id: demoRestaurant.id,
     target_type: "dish",
-    dish_id: "d20",
+    dish_id: "d84",
     dish_name: "Hamburguesa Americana",
     author_name: "Cliente demo 4",
     rating: 2,
@@ -184,29 +137,6 @@ export const demoQrCodes: QrCode[] = [
   { id: "q5", restaurant_id: demoRestaurant.id, label: "Terraza 1 (antigua)", type: "table", table_number: 9, status: "archived", scan_count: 12, created_at: "2026-01-15T00:00:00Z" },
 ];
 
-export type DemoActivityKind =
-  | "name"
-  | "price"
-  | "description"
-  | "status"
-  | "category"
-  | "order"
-  | "badge"
-  | "image"
-  | "review"
-  | "settings"
-  | "theme"
-  | "schedule";
-
-export type DemoActivity = {
-  id: string;
-  kind: DemoActivityKind;
-  actor: string;
-  /** Verbo + complemento, sin el actor delante — se renderiza como `${actor} ${message}`. */
-  message: string;
-  created_at: string;
-};
-
 /** Persona que realiza las acciones en esta sesión de demostración. */
 export const CURRENT_ACTOR = "Jeremy";
 
@@ -218,10 +148,10 @@ export const CURRENT_ACTOR = "Jeremy";
  * `lib/activity/activity-context.tsx`.
  */
 export const demoActivity: DemoActivity[] = [
-  { id: "act1", kind: "status", actor: CURRENT_ACTOR, message: "marcó «Vegetal (receta antigua)» como archivado", created_at: "2026-08-02T21:10:00Z" },
+  { id: "act1", kind: "status", actor: CURRENT_ACTOR, message: "marcó «Vegetal» como archivado", created_at: "2026-08-02T21:10:00Z" },
   { id: "act2", kind: "price", actor: CURRENT_ACTOR, message: "cambió el precio de «Diavola» a 12,50 €", created_at: "2026-08-02T18:40:00Z" },
-  { id: "act3", kind: "status", actor: "Staff", message: "ocultó «Irish Coffee»", created_at: "2026-08-02T09:15:00Z" },
-  { id: "act4", kind: "badge", actor: CURRENT_ACTOR, message: "añadió la etiqueta Nuevo a «Ensalada de Quinoa»", created_at: "2026-08-01T20:05:00Z" },
+  { id: "act3", kind: "status", actor: "Staff", message: "ocultó «Irish coffee»", created_at: "2026-08-02T09:15:00Z" },
+  { id: "act4", kind: "badge", actor: CURRENT_ACTOR, message: "añadió la etiqueta Nuevo a «Carpaccio de Bresaola»", created_at: "2026-08-01T20:05:00Z" },
   { id: "act5", kind: "review", actor: CURRENT_ACTOR, message: "respondió a la reseña de Cliente demo 3", created_at: "2026-07-30T09:00:00Z" },
   { id: "act6", kind: "category", actor: "Staff", message: "actualizó el horario de la categoría Platos Calientes", created_at: "2026-07-29T17:30:00Z" },
 ];
