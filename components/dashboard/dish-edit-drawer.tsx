@@ -278,7 +278,7 @@ export function DishEditDrawer({
                 </p>
                 <Card className="flex flex-col gap-1 p-4">
                   <p className="text-xs text-faint-foreground">
-                    novacoremenu.app › r › note-di-caffe › platos › {(name || "plato").toLowerCase().replace(/\s+/g, "-")}
+                    novacoremenu.app › r › note-di-caffe › platos › {dish.id}
                   </p>
                   <p className="text-base text-primary">{name || "Nombre del plato"} — Note di Caffé</p>
                   <p className="text-sm text-muted-foreground">
