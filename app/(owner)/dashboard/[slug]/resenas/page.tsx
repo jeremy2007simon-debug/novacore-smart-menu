@@ -35,6 +35,11 @@ export default function ResenasPage() {
     showToast.success("Respuesta publicada");
   }
 
+  function reportReview(id: string) {
+    setReviews((prev) => prev.map((r) => (r.id === id ? { ...r, reported: true } : r)));
+    showToast.success("Reseña reportada", "El equipo de NovaCore la revisará. La puntuación no cambia.");
+  }
+
   return (
     <div>
       <PageHeader
@@ -69,6 +74,7 @@ export default function ResenasPage() {
                       review={review}
                       onChangeStatus={(status) => updateStatus(review.id, status)}
                       onReply={(reply) => updateReply(review.id, reply)}
+                      onReport={() => reportReview(review.id)}
                     />
                   ))}
                 </div>

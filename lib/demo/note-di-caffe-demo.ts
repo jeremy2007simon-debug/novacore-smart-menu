@@ -107,7 +107,7 @@ export const demoDishes: DemoDish[] = [
   { id: "d20", restaurant_id: demoRestaurant.id, category_id: "c6", category_name: "Hamburguesas", name: "Hamburguesa Americana", short_description: null, description: null, ingredients: [], spice_level: null, nutritional_info: null, price_cents: 890, status: "sold_out", badges: ["bestseller"], avg_rating: 4.8, rating_count: 47, sort_order: 1, created_at: "2026-08-03T00:00:00Z", image_url: null },
 ];
 
-export type DemoReview = Review & { dish_name: string | null };
+export type DemoReview = Review & { dish_name: string | null; reported?: boolean };
 
 export const demoReviews: DemoReview[] = [
   {

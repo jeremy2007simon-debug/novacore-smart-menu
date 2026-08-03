@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Check, EyeOff, MessageSquare } from "lucide-react";
+import { Check, EyeOff, Flag, MessageSquare } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Rating } from "@/components/ui/rating";
 import { Textarea } from "@/components/ui/textarea";
+import { ReportReviewDialog } from "./report-review-dialog";
 import type { DemoReview } from "@/lib/demo/note-di-caffe-demo";
 import type { ReviewStatus } from "@/lib/types/database";
 
@@ -20,13 +21,16 @@ export function ReviewCard({
   review,
   onChangeStatus,
   onReply,
+  onReport,
 }: {
   review: DemoReview;
   onChangeStatus: (status: ReviewStatus) => void;
   onReply: (reply: string) => void;
+  onReport: (reason: string, note: string) => void;
 }) {
   const [replyDraft, setReplyDraft] = useState(review.owner_reply ?? "");
   const [replying, setReplying] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   return (
     <Card>
@@ -41,7 +45,14 @@ export function ReviewCard({
             {new Date(review.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
           </p>
         </div>
-        <Badge variant={STATUS_CONFIG[review.status].variant}>{STATUS_CONFIG[review.status].label}</Badge>
+        <div className="flex items-center gap-1.5">
+          {review.reported ? (
+            <Badge variant="danger">
+              <Flag className="h-3 w-3" aria-hidden="true" /> Reportada
+            </Badge>
+          ) : null}
+          <Badge variant={STATUS_CONFIG[review.status].variant}>{STATUS_CONFIG[review.status].label}</Badge>
+        </div>
       </CardHeader>
 
       <CardContent>
@@ -96,7 +107,21 @@ export function ReviewCard({
             <MessageSquare className="h-4 w-4" /> {review.owner_reply ? "Editar respuesta" : "Responder"}
           </Button>
         ) : null}
+        {!review.reported ? (
+          <Button size="sm" variant="ghost" onClick={() => setReportOpen(true)}>
+            <Flag className="h-4 w-4" /> Reportar
+          </Button>
+        ) : null}
       </CardFooter>
+
+      <ReportReviewDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        onSubmit={(reason, note) => {
+          onReport(reason, note);
+          setReportOpen(false);
+        }}
+      />
     </Card>
   );
 }
