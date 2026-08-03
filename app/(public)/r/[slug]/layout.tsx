@@ -2,18 +2,12 @@ import { notFound } from "next/navigation";
 import { ThemeProvider } from "@/lib/theme/theme-provider";
 import { parseRestaurantTheme } from "@/lib/theme/parse";
 import { PRESETS } from "@/lib/theme/presets";
-import { getPublicRestaurant } from "@/features/menu/get-public-restaurant";
+import { getPublicMenu } from "@/features/menu/get-public-menu";
 
 type PublicRestaurantLayoutProps = {
   children: React.ReactNode;
   params: Promise<{ slug: string }>;
 };
-
-async function resolveTheme(slug: string) {
-  const restaurant = await getPublicRestaurant(slug);
-  if (!restaurant) return null;
-  return parseRestaurantTheme(restaurant.theme);
-}
 
 /**
  * Color de la barra del navegador (Android/iOS al añadir a pantalla de
@@ -23,8 +17,9 @@ async function resolveTheme(slug: string) {
  */
 export async function generateViewport({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const theme = await resolveTheme(slug);
-  if (!theme) return {};
+  const menu = await getPublicMenu(slug);
+  if (!menu) return {};
+  const theme = parseRestaurantTheme(menu.restaurant.theme);
   const preset = PRESETS[theme.preset];
   return { themeColor: theme.overrides?.primaryColor ?? preset.light.primary };
 }
@@ -39,9 +34,11 @@ export default async function PublicRestaurantLayout({
   params,
 }: PublicRestaurantLayoutProps) {
   const { slug } = await params;
-  const theme = await resolveTheme(slug);
+  const menu = await getPublicMenu(slug);
 
-  if (!theme) notFound();
+  if (!menu) notFound();
+
+  const theme = parseRestaurantTheme(menu.restaurant.theme);
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 }

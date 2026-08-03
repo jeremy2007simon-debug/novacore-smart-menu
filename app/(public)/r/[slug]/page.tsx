@@ -1,39 +1,30 @@
 import { notFound } from "next/navigation";
-import { Rating } from "@/components/ui/rating";
-import { getPublicRestaurant } from "@/features/menu/get-public-restaurant";
+import { RestaurantHeader } from "@/components/public/restaurant-header";
+import { MenuBrowser } from "@/components/public/menu-browser";
+import { RestaurantFooter } from "@/components/public/restaurant-footer";
+import { getPublicMenu } from "@/features/menu/get-public-menu";
 
 type RestaurantPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-/**
- * Placeholder de la carta pública: ya hereda el tema real del restaurante
- * (ver el layout de este mismo segmento). Categorías, buscador, platos y
- * reseñas llegan en el bloque de la carta pública.
- */
 export default async function RestaurantPublicPage({ params }: RestaurantPageProps) {
   const { slug } = await params;
-  const restaurant = await getPublicRestaurant(slug);
+  const menu = await getPublicMenu(slug);
 
-  if (!restaurant) notFound();
+  if (!menu) notFound();
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="font-display text-2xl font-semibold text-foreground">{restaurant.name}</h1>
-      {restaurant.description ? (
-        <p className="mt-2 text-muted-foreground">{restaurant.description}</p>
-      ) : null}
-
-      {restaurant.external_rating !== null && restaurant.external_review_source ? (
-        <div className="mt-3 flex items-center gap-2">
-          <Rating value={restaurant.external_rating} count={restaurant.external_rating_count ?? undefined} />
-          <span className="text-xs text-faint-foreground">vía {restaurant.external_review_source}</span>
-        </div>
-      ) : null}
-
-      <p className="mt-8 text-sm text-faint-foreground">
-        Categorías, buscador, platos y reseñas — siguiente bloque de la Fase 1.
-      </p>
+    <main>
+      <RestaurantHeader restaurant={menu.restaurant} />
+      <MenuBrowser
+        slug={slug}
+        currency={menu.restaurant.currency}
+        categories={menu.categories}
+        dishes={menu.dishes}
+        allergens={menu.allergens}
+      />
+      <RestaurantFooter restaurant={menu.restaurant} reviews={menu.reviews} />
     </main>
   );
 }
