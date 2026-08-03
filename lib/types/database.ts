@@ -8,11 +8,15 @@
 
 export type RestaurantStatus = "active" | "suspended";
 export type RestaurantPlan = "starter" | "pro" | "enterprise";
+export type RestaurantOperatingStatus = "open" | "temporarily_closed" | "vacation";
 export type RestaurantUserRole = "owner" | "staff";
 export type DishStatus = "available" | "sold_out" | "hidden" | "archived";
+export type DishBadge = "recommended" | "bestseller" | "new" | "on_offer";
 export type ReviewTargetType = "dish" | "restaurant";
 export type ReviewStatus = "pending" | "approved" | "hidden";
 export type QrType = "menu" | "table";
+export type QrCodeStatus = "active" | "archived";
+export type PromotionDiscountType = "percentage" | "fixed_amount";
 
 export type Database = {
   public: {
@@ -39,6 +43,11 @@ export type Database = {
           allergen_policy: string | null;
           status: RestaurantStatus;
           plan: RestaurantPlan;
+          operating_status: RestaurantOperatingStatus;
+          operating_status_message: string | null;
+          operating_status_until: string | null;
+          seo_title: string | null;
+          seo_description: string | null;
           created_at: string;
         };
         Insert: Partial<Database["public"]["Tables"]["restaurants"]["Row"]> & {
@@ -77,6 +86,9 @@ export type Database = {
           name: string;
           icon: string | null;
           sort_order: number;
+          available_from: string | null;
+          available_to: string | null;
+          available_days: number[] | null;
           created_at: string;
         };
         Insert: Partial<Database["public"]["Tables"]["categories"]["Row"]> & {
@@ -122,6 +134,7 @@ export type Database = {
           nutritional_info: Record<string, unknown> | null;
           price_cents: number;
           status: DishStatus;
+          badges: DishBadge[];
           avg_rating: number;
           rating_count: number;
           sort_order: number;
@@ -142,6 +155,7 @@ export type Database = {
           name: string;
           short_description: string | null;
           description: string | null;
+          ingredients: string[] | null;
         };
         Insert: {
           dish_id: string;
@@ -149,6 +163,7 @@ export type Database = {
           name: string;
           short_description?: string | null;
           description?: string | null;
+          ingredients?: string[] | null;
         };
         Update: Partial<Database["public"]["Tables"]["dish_translations"]["Row"]>;
         Relationships: [];
@@ -215,6 +230,7 @@ export type Database = {
           label: string;
           type: QrType;
           table_number: number | null;
+          status: QrCodeStatus;
           scan_count: number;
           created_at: string;
         };
@@ -224,6 +240,28 @@ export type Database = {
           type: QrType;
         };
         Update: Partial<Database["public"]["Tables"]["qr_codes"]["Row"]>;
+        Relationships: [];
+      };
+      promotions: {
+        Row: {
+          id: string;
+          restaurant_id: string;
+          dish_id: string | null;
+          title: string;
+          description: string | null;
+          discount_type: PromotionDiscountType | null;
+          discount_value: number | null;
+          starts_at: string;
+          ends_at: string;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["promotions"]["Row"]> & {
+          restaurant_id: string;
+          title: string;
+          starts_at: string;
+          ends_at: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["promotions"]["Row"]>;
         Relationships: [];
       };
       analytics_events: {
@@ -282,3 +320,4 @@ export type DishVariant = Tables<"dish_variants">;
 export type Review = Tables<"reviews">;
 export type QrCode = Tables<"qr_codes">;
 export type AnalyticsEvent = Tables<"analytics_events">;
+export type Promotion = Tables<"promotions">;

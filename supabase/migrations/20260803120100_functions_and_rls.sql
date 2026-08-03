@@ -106,6 +106,7 @@ alter table dish_allergens enable row level security;
 alter table reviews enable row level security;
 alter table qr_codes enable row level security;
 alter table analytics_events enable row level security;
+alter table promotions enable row level security;
 
 -- --- restaurants ------------------------------------------------------------
 
@@ -341,8 +342,31 @@ create policy qr_codes_staff_update on qr_codes for update
 
 create policy qr_codes_admin_delete on qr_codes for delete
   using (is_platform_admin());
-  -- Ver nota en el resumen de la Fase 1: pendiente confirmar si el
-  -- propietario deberia poder desactivar/borrar sus propios QR sin admin.
+  -- Owner/staff archivan (status = 'archived', permitido por
+  -- qr_codes_staff_update); el borrado definitivo sigue siendo de NovaCore.
+
+-- --- promotions ---------------------------------------------------------------
+
+create policy promotions_read on promotions for select
+  using (
+    (
+      now() between starts_at and ends_at
+      and exists (select 1 from restaurants r where r.id = restaurant_id and r.status = 'active')
+    )
+    or has_restaurant_role(restaurant_id, '{owner,staff}')
+    or is_platform_admin()
+  );
+
+create policy promotions_staff_insert on promotions for insert
+  with check (has_restaurant_role(restaurant_id, '{owner,staff}') or is_platform_admin());
+
+create policy promotions_staff_update on promotions for update
+  using (has_restaurant_role(restaurant_id, '{owner,staff}') or is_platform_admin());
+  -- Para "cancelar" una promocion antes de tiempo, se acorta ends_at;
+  -- no hace falta borrarla.
+
+create policy promotions_admin_delete on promotions for delete
+  using (is_platform_admin());
 
 -- --- analytics_events -------------------------------------------------------
 -- Sin politica de insert: el registro de eventos se hace exclusivamente
