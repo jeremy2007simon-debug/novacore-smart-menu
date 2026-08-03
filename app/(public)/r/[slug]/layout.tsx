@@ -11,9 +11,7 @@ type PublicRestaurantLayoutProps = {
 
 /**
  * Color de la barra del navegador (Android/iOS al añadir a pantalla de
- * inicio) igual al primary del tema del restaurante — pequeño paso real de
- * cara a PWA, sin necesitar todavía manifest.json ni iconos propios (esos
- * llegan con "cambiar el logo" del panel del propietario).
+ * inicio) igual al primary del tema del restaurante.
  */
 export async function generateViewport({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -22,6 +20,24 @@ export async function generateViewport({ params }: { params: Promise<{ slug: str
   const theme = parseRestaurantTheme(menu.restaurant.theme);
   const preset = PRESETS[theme.preset];
   return { themeColor: theme.overrides?.primaryColor ?? preset.light.primary };
+}
+
+/**
+ * Cada restaurante instala SU propia carta como app — nombre y color
+ * propios, nunca "NovaCore" — apuntando al manifest dinámico de
+ * manifest.webmanifest/route.ts en vez del manifest.ts especial de Next
+ * (ese no puede leer el slug de la ruta).
+ */
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const menu = await getPublicMenu(slug);
+  if (!menu) return {};
+  return {
+    title: menu.restaurant.name,
+    description: menu.restaurant.description ?? undefined,
+    manifest: `/r/${slug}/manifest.webmanifest`,
+    appleWebApp: { title: menu.restaurant.name, statusBarStyle: "default" as const },
+  };
 }
 
 /**
