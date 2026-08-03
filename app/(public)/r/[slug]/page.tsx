@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Rating } from "@/components/ui/rating";
 import { getPublicRestaurant } from "@/features/menu/get-public-restaurant";
 
 type RestaurantPageProps = {
@@ -22,6 +23,14 @@ export default async function RestaurantPublicPage({ params }: RestaurantPagePro
       {restaurant.description ? (
         <p className="mt-2 text-muted-foreground">{restaurant.description}</p>
       ) : null}
+
+      {restaurant.external_rating !== null && restaurant.external_review_source ? (
+        <div className="mt-3 flex items-center gap-2">
+          <Rating value={restaurant.external_rating} count={restaurant.external_rating_count ?? undefined} />
+          <span className="text-xs text-faint-foreground">vía {restaurant.external_review_source}</span>
+        </div>
+      ) : null}
+
       <p className="mt-8 text-sm text-faint-foreground">
         Categorías, buscador, platos y reseñas — siguiente bloque de la Fase 1.
       </p>

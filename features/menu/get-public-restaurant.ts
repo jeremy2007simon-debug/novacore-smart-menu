@@ -13,7 +13,9 @@ export const getPublicRestaurant = cache(async (slug: string) => {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("restaurants")
-    .select("id, slug, name, description, logo_url, theme")
+    .select(
+      "id, slug, name, description, logo_url, theme, external_rating, external_rating_count, external_review_source",
+    )
     .eq("slug", slug)
     .eq("status", "active")
     .maybeSingle();

@@ -48,6 +48,9 @@ export type Database = {
           operating_status_until: string | null;
           seo_title: string | null;
           seo_description: string | null;
+          external_rating: number | null;
+          external_rating_count: number | null;
+          external_review_source: string | null;
           created_at: string;
         };
         Insert: Partial<Database["public"]["Tables"]["restaurants"]["Row"]> & {

@@ -1,11 +1,15 @@
 -- Restaurante de demostración: Note di Caffé (Los Abrigos, Tenerife)
 --
--- Los datos del restaurante (nombre, slug, dirección, teléfono, horario)
--- son reales, proporcionados por el cliente. Las categorías y los platos
--- son EXPLÍCITAMENTE de demostración — ningún nombre de plato, precio o
--- ingrediente de aquí abajo pretende representar la carta real. Sustituir
--- en cuanto exista la carta oficial (o borrar con el bloque comentado al
--- final de este archivo).
+-- Los datos del restaurante (nombre, slug, dirección, teléfono, horario,
+-- valoración y nº de reseñas de Google) son reales, proporcionados por el
+-- cliente. external_rating/-_count/-_source son puramente informativos y
+-- nunca alimentan la tabla reviews propia de NovaCore (decisión explícita:
+-- no se fabrican 782 reseñas falsas).
+--
+-- Las categorías y los platos sí son EXPLÍCITAMENTE de demostración —
+-- ningún nombre de plato, precio o ingrediente de aquí abajo pretende
+-- representar la carta real. Sustituir en cuanto exista la carta oficial
+-- (o borrar con el bloque comentado al final de este archivo).
 --
 -- Idempotente: relanzar este script no duplica nada (restaurante,
 -- categorías y platos de demostración se reutilizan si ya existen).
@@ -23,7 +27,8 @@ declare
 begin
   insert into restaurants (
     slug, name, description, phone, address, schedule, currency,
-    default_locale, supported_locales, theme, status, plan
+    default_locale, supported_locales, theme, status, plan,
+    external_rating, external_rating_count, external_review_source
   ) values (
     'note-di-caffe',
     'Note di Caffé',
@@ -44,14 +49,20 @@ begin
     '{es}',
     '{"preset": "mediterraneo", "colorMode": "system"}'::jsonb,
     'active',
-    'starter'
+    'starter',
+    4.1,
+    782,
+    'Google'
   )
   on conflict (slug) do update set
     name = excluded.name,
     description = excluded.description,
     phone = excluded.phone,
     address = excluded.address,
-    schedule = excluded.schedule
+    schedule = excluded.schedule,
+    external_rating = excluded.external_rating,
+    external_rating_count = excluded.external_rating_count,
+    external_review_source = excluded.external_review_source
   returning id into v_restaurant_id;
 
   -- Cuatro categorías de ejemplo, una por cada tipo de negocio real
