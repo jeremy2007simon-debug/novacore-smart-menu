@@ -189,22 +189,29 @@ export type DemoActivityKind = "price" | "status" | "badge" | "review" | "catego
 export type DemoActivity = {
   id: string;
   kind: DemoActivityKind;
+  actor: string;
+  /** Verbo + complemento, sin el actor delante — se renderiza como `${actor} ${message}`. */
   message: string;
   created_at: string;
 };
 
+/** Persona que realiza las acciones en esta sesión de demostración. */
+export const CURRENT_ACTOR = "Jeremy";
+
 /**
  * Registro de actividad de relleno para el "feed" del Resumen: son ejemplos
  * de acciones plausibles sobre los platos/categorías/reseñas ya existentes,
- * no hechos reales (igual que las reseñas de demostración).
+ * no hechos reales (igual que las reseñas de demostración). El historial
+ * real, generado por tus propias ediciones, se añade por delante desde
+ * `lib/activity/activity-context.tsx`.
  */
 export const demoActivity: DemoActivity[] = [
-  { id: "act1", kind: "status", message: "Marcaste «Vegetal (receta antigua)» como archivado", created_at: "2026-08-02T21:10:00Z" },
-  { id: "act2", kind: "price", message: "Cambiaste el precio de «Diavola» a 12,50 €", created_at: "2026-08-02T18:40:00Z" },
-  { id: "act3", kind: "status", message: "Ocultaste «Irish Coffee»", created_at: "2026-08-02T09:15:00Z" },
-  { id: "act4", kind: "badge", message: "Añadiste la etiqueta Nuevo a «Ensalada de Quinoa»", created_at: "2026-08-01T20:05:00Z" },
-  { id: "act5", kind: "review", message: "Respondiste a la reseña de Cliente demo 3", created_at: "2026-07-30T09:00:00Z" },
-  { id: "act6", kind: "category", message: "Actualizaste el horario de la categoría Platos Calientes", created_at: "2026-07-29T17:30:00Z" },
+  { id: "act1", kind: "status", actor: CURRENT_ACTOR, message: "marcó «Vegetal (receta antigua)» como archivado", created_at: "2026-08-02T21:10:00Z" },
+  { id: "act2", kind: "price", actor: CURRENT_ACTOR, message: "cambió el precio de «Diavola» a 12,50 €", created_at: "2026-08-02T18:40:00Z" },
+  { id: "act3", kind: "status", actor: "Staff", message: "ocultó «Irish Coffee»", created_at: "2026-08-02T09:15:00Z" },
+  { id: "act4", kind: "badge", actor: CURRENT_ACTOR, message: "añadió la etiqueta Nuevo a «Ensalada de Quinoa»", created_at: "2026-08-01T20:05:00Z" },
+  { id: "act5", kind: "review", actor: CURRENT_ACTOR, message: "respondió a la reseña de Cliente demo 3", created_at: "2026-07-30T09:00:00Z" },
+  { id: "act6", kind: "category", actor: "Staff", message: "actualizó el horario de la categoría Platos Calientes", created_at: "2026-07-29T17:30:00Z" },
 ];
 
 export const demoAllergens: { id: string; code: string; icon_key: string; name_es: string; name_en: string }[] = [

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ExternalLink, Eye, LogOut, Menu, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SaveStatusIndicator } from "./save-status-indicator";
 import { ColorModeToggle } from "@/lib/theme/color-mode-toggle";
 import {
   DropdownMenu,
@@ -40,6 +41,8 @@ export function Topbar({
         <p className="truncate font-display text-sm font-semibold text-foreground">{restaurantName}</p>
         <p className="truncate text-xs text-faint-foreground">novacoremenu.app/r/{slug}</p>
       </div>
+
+      <SaveStatusIndicator />
 
       <Button variant="outline" size="sm" onClick={onOpenPreview}>
         <Eye className="h-4 w-4" />

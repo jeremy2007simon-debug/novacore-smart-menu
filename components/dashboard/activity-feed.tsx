@@ -12,10 +12,16 @@ const KIND_ICON: Record<DemoActivityKind, React.ElementType> = {
   settings: Settings,
 };
 
-export function ActivityFeed({ activity }: { activity: DemoActivity[] }) {
+export function ActivityFeed({
+  activity,
+  title = "Últimos cambios",
+}: {
+  activity: DemoActivity[];
+  title?: string;
+}) {
   return (
     <Card className="p-5">
-      <h2 className="font-display text-base font-semibold text-foreground">Últimos cambios</h2>
+      <h2 className="font-display text-base font-semibold text-foreground">{title}</h2>
       <ul className="mt-4 flex flex-col gap-4">
         {activity.map((item) => {
           const Icon = KIND_ICON[item.kind];
@@ -25,7 +31,9 @@ export function ActivityFeed({ activity }: { activity: DemoActivity[] }) {
                 <Icon className="h-4 w-4" aria-hidden="true" />
               </span>
               <div className="min-w-0">
-                <p className="text-sm text-foreground">{item.message}</p>
+                <p className="text-sm text-foreground">
+                  <span className="font-medium">{item.actor}</span> {item.message}
+                </p>
                 <p className="mt-0.5 text-xs text-faint-foreground">{formatRelativeTime(item.created_at)}</p>
               </div>
             </li>

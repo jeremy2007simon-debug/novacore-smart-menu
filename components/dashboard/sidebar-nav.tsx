@@ -10,6 +10,7 @@ import {
   QrCode,
   Palette,
   Settings,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { href: "/resenas", label: "Reseñas", icon: Star },
   { href: "/qr", label: "Códigos QR", icon: QrCode },
   { href: "/apariencia", label: "Apariencia", icon: Palette },
+  { href: "/actividad", label: "Actividad", icon: History },
   { href: "/ajustes", label: "Ajustes", icon: Settings },
 ] as const;
 

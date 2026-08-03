@@ -14,15 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { StatTile } from "@/components/dashboard/stat-tile";
-import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { LiveActivityFeed } from "@/components/dashboard/live-activity-feed";
 import { RestaurantStatusToggle } from "@/components/dashboard/restaurant-status-toggle";
-import {
-  demoActivity,
-  demoCategories,
-  demoDishes,
-  demoRestaurant,
-  demoReviews,
-} from "@/lib/demo/note-di-caffe-demo";
+import { demoCategories, demoDishes, demoRestaurant, demoReviews } from "@/lib/demo/note-di-caffe-demo";
 
 type OwnerDashboardPageProps = {
   params: Promise<{ slug: string }>;
@@ -120,7 +114,7 @@ export default async function OwnerDashboardPage({ params }: OwnerDashboardPageP
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <ActivityFeed activity={demoActivity} />
+          <LiveActivityFeed slug={slug} />
         </div>
 
         <Card className="p-5">
