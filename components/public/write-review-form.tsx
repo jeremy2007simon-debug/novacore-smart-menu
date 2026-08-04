@@ -8,33 +8,50 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Rating } from "@/components/ui/rating";
 import { showToast } from "@/components/ui/toast";
+import { submitDishReview } from "@/features/menu/submit-review";
 
 /**
- * Sin un proyecto Supabase real conectado todavía no hay dónde persistir
- * una reseña nueva de verdad — igual que el autoguardado del panel del
- * propietario (`simulatePersist`), esto simula el envío y pasa a un estado
- * de "gracias" en vez de insertar la fila. El día que haya un backend real,
- * solo hay que sustituir el `setTimeout` por la llamada a Supabase.
+ * Inserta la reseña de verdad en Supabase, siempre en `status: "pending"`
+ * — la política `reviews_public_insert` es la única que permite escribir
+ * sin sesión, y solo con ese estado; queda pendiente de moderación en
+ * Reseñas del panel del propietario, igual que cualquier otra.
  */
-export function WriteReviewForm({ dishName }: { dishName: string }) {
+export function WriteReviewForm({
+  dishId,
+  dishName,
+  restaurantId,
+}: {
+  dishId: string;
+  dishName: string;
+  restaurantId: string;
+}) {
   const [rating, setRating] = useState(0);
   const [authorName, setAuthorName] = useState("");
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (rating === 0) {
       showToast.error("Elige una valoración", "Toca una estrella para puntuar el plato.");
       return;
     }
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      setSubmitted(true);
-      showToast.success("¡Gracias por tu reseña!", "Se publicará en cuanto el restaurante la revise.");
-    }, 400);
+    const result = await submitDishReview({
+      restaurantId,
+      dishId,
+      rating,
+      authorName: authorName.trim() || null,
+      comment: comment.trim() || null,
+    });
+    setSubmitting(false);
+    if (!result.ok) {
+      showToast.error("No se pudo enviar la reseña", "Inténtalo de nuevo en unos segundos.");
+      return;
+    }
+    setSubmitted(true);
+    showToast.success("¡Gracias por tu reseña!", "Se publicará en cuanto el restaurante la revise.");
   }
 
   if (submitted) {

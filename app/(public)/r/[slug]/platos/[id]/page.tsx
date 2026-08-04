@@ -168,7 +168,7 @@ export default async function DishDetailPage({ params }: DishPageProps) {
           </div>
         )}
 
-        <WriteReviewForm dishName={dish.name} />
+        <WriteReviewForm dishId={dish.id} dishName={dish.name} restaurantId={menu.restaurant.id} />
       </div>
     </main>
   );
