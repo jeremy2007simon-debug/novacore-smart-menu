@@ -15,8 +15,8 @@ export default async function LoginPage(props: LoginPageProps) {
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-8 px-6">
       <div>
-        <h1 className="text-2xl font-semibold text-neutral-900">NovaCore Smart Menu</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="text-2xl font-semibold text-foreground">NovaCore Smart Menu</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Acceso para propietarios, personal de restaurante y administradores de NovaCore. No
           hay registro público: cada cuenta la da de alta el propietario o el equipo de NovaCore.
         </p>
