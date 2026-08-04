@@ -4,8 +4,7 @@ import { Rating } from "@/components/ui/rating";
 import { parseRestaurantTheme } from "@/lib/theme/parse";
 import { resolveThemeVars } from "@/lib/theme/resolve";
 import { formatPrice } from "@/lib/utils/money";
-import { demoAllergens, demoRestaurant } from "@/lib/demo/note-di-caffe-demo";
-import type { DishBadge, DishStatus } from "@/lib/types/database";
+import type { Allergen, DishBadge, DishStatus, Restaurant } from "@/lib/types/database";
 
 const BADGE_LABEL: Record<DishBadge, string> = {
   recommended: "Recomendado",
@@ -34,14 +33,22 @@ type PreviewDish = {
  * un blob: URL (foto recién soltada, todavía sin subir) y next/image no
  * puede optimizar blobs — se usa <img> a propósito.
  */
-export function DishLivePreview({ dish }: { dish: PreviewDish }) {
-  const theme = parseRestaurantTheme(demoRestaurant.theme);
+export function DishLivePreview({
+  dish,
+  restaurant,
+  allergens,
+}: {
+  dish: PreviewDish;
+  restaurant: Pick<Restaurant, "theme" | "currency">;
+  allergens: Pick<Allergen, "code" | "name_es">[];
+}) {
+  const theme = parseRestaurantTheme(restaurant.theme);
   const themeVars = resolveThemeVars(theme, "light");
   const principalImage = dish.images[0] ?? null;
   const soldOut = dish.status === "sold_out";
   const isHiddenOrArchived = dish.status === "hidden" || dish.status === "archived";
   const allergenNames = dish.allergenCodes
-    .map((code) => demoAllergens.find((a) => a.code === code)?.name_es)
+    .map((code) => allergens.find((a) => a.code === code)?.name_es)
     .filter((n): n is string => Boolean(n));
 
   return (
@@ -84,7 +91,7 @@ export function DishLivePreview({ dish }: { dish: PreviewDish }) {
                 {dish.name || "Nombre del plato"}
               </h3>
               <span className="whitespace-nowrap font-display text-base font-semibold text-foreground">
-                {formatPrice(dish.price_cents, demoRestaurant.currency)}
+                {formatPrice(dish.price_cents, restaurant.currency)}
               </span>
             </div>
 

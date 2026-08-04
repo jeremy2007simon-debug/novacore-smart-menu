@@ -17,18 +17,24 @@ export function TeamInviteDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onInvite: (email: string, role: RestaurantUserRole) => void;
+  onInvite: (email: string, role: RestaurantUserRole) => void | Promise<void>;
 }) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<RestaurantUserRole>("staff");
+  const [inviting, setInviting] = useState(false);
   const isValid = EMAIL_PATTERN.test(email.trim());
 
-  function handleInvite() {
+  async function handleInvite() {
     if (!isValid) return;
-    onInvite(email.trim(), role);
-    onOpenChange(false);
-    setEmail("");
-    setRole("staff");
+    setInviting(true);
+    try {
+      await onInvite(email.trim(), role);
+      onOpenChange(false);
+      setEmail("");
+      setRole("staff");
+    } finally {
+      setInviting(false);
+    }
   }
 
   return (
@@ -65,11 +71,11 @@ export function TeamInviteDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={inviting}>
             Cancelar
           </Button>
-          <Button onClick={handleInvite} disabled={!isValid}>
-            Enviar invitación
+          <Button onClick={handleInvite} disabled={!isValid || inviting}>
+            {inviting ? "Enviando…" : "Enviar invitación"}
           </Button>
         </DialogFooter>
       </DialogContent>

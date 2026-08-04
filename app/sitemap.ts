@@ -1,26 +1,31 @@
 import type { MetadataRoute } from "next";
 import { publicEnv } from "@/lib/env";
-import { demoDishes, demoRestaurant } from "@/lib/demo/note-di-caffe-demo";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
  * Solo la carta pública tiene sentido en un sitemap (login/dashboard/
- * novacore ya llevan noindex). Por ahora solo existe note-di-caffe, pero
- * lee de la misma fuente que el resto del panel — cuando haya varios
- * restaurantes reales en Supabase, esto se sustituye por una consulta que
- * itere todos los restaurantes activos en vez de uno solo hardcodeado.
+ * novacore ya llevan noindex). Itera todos los restaurantes activos —
+ * hoy solo hay uno real, pero ya no está hardcodeado. RLS solo deja ver
+ * (sin sesión) los restaurantes activos y los platos "available"/
+ * "sold_out", así que no hace falta filtrar el estado a mano.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = publicEnv.NEXT_PUBLIC_SITE_URL;
-  const restaurantUrl = `${base}/r/${demoRestaurant.slug}`;
-  // "hidden"/"archived" nunca son visibles públicamente — no pertenecen al sitemap.
-  const publicDishes = demoDishes.filter((d) => d.status === "available" || d.status === "sold_out");
+  const supabase = await createSupabaseServerClient();
 
-  return [
-    { url: restaurantUrl, changeFrequency: "daily", priority: 1 },
-    ...publicDishes.map((dish) => ({
-      url: `${restaurantUrl}/platos/${dish.id}`,
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    })),
-  ];
+  const { data: restaurants } = await supabase.from("restaurants").select("id, slug").eq("status", "active");
+  if (!restaurants || restaurants.length === 0) return [];
+
+  const entries: MetadataRoute.Sitemap = [];
+  for (const restaurant of restaurants) {
+    const restaurantUrl = `${base}/r/${restaurant.slug}`;
+    entries.push({ url: restaurantUrl, changeFrequency: "daily", priority: 1 });
+
+    const { data: dishes } = await supabase.from("dishes").select("id").eq("restaurant_id", restaurant.id);
+    for (const dish of dishes ?? []) {
+      entries.push({ url: `${restaurantUrl}/platos/${dish.id}`, changeFrequency: "weekly", priority: 0.6 });
+    }
+  }
+
+  return entries;
 }

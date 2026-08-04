@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, ImagePlus, X } from "lucide-react";
+import { GripVertical, ImagePlus, Loader2, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils/cn";
 
@@ -62,19 +62,41 @@ function SortableThumb({
 /**
  * Galería de imágenes del plato: arrastrar y soltar para reordenar, la
  * primera es siempre la imagen principal (la que se ve en tarjetas y
- * listados). La compresión real llega cuando se conecte la subida a
- * Supabase Storage — aquí solo se guardan vistas previas locales.
+ * listados). Cada archivo sube a Supabase Storage vía `onUpload` — se
+ * procesan uno a uno para no perder ninguno por condiciones de carrera
+ * sobre `value`, mostrando una vista previa local con overlay mientras
+ * cada subida está en curso.
  */
-export function ImageGalleryEditor({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
+export function ImageGalleryEditor({
+  value,
+  onChange,
+  onUpload,
+}: {
+  value: string[];
+  onChange: (next: string[]) => void;
+  onUpload: (file: File) => Promise<string | null>;
+}) {
   const [dragActive, setDragActive] = useState(false);
+  const [pending, setPending] = useState<{ key: string; preview: string }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
-  function addFiles(files: FileList | null) {
-    const urls = Array.from(files ?? [])
-      .filter((f) => f.type.startsWith("image/"))
-      .map((f) => URL.createObjectURL(f));
-    if (urls.length > 0) onChange([...value, ...urls]);
+  const valueRef = useRef(value);
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  async function addFiles(files: FileList | null) {
+    const imageFiles = Array.from(files ?? []).filter((f) => f.type.startsWith("image/"));
+    for (const file of imageFiles) {
+      const key = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const preview = URL.createObjectURL(file);
+      setPending((prev) => [...prev, { key, preview }]);
+      const url = await onUpload(file);
+      setPending((prev) => prev.filter((p) => p.key !== key));
+      URL.revokeObjectURL(preview);
+      if (url) onChange([...valueRef.current, url]);
+    }
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -97,6 +119,19 @@ export function ImageGalleryEditor({ value, onChange }: { value: string[]; onCha
                 isPrincipal={i === 0}
                 onRemove={() => onChange(value.filter((_, idx) => idx !== i))}
               />
+            ))}
+
+            {pending.map((p) => (
+              <div
+                key={p.key}
+                className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md border border-border bg-surface-raised"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element -- vista previa local mientras se sube */}
+                <img src={p.preview} alt="" className="h-full w-full object-cover opacity-60" />
+                <div className="absolute inset-0 flex items-center justify-center bg-background/40">
+                  <Loader2 className="h-5 w-5 animate-spin text-foreground" aria-hidden="true" />
+                </div>
+              </div>
             ))}
 
             <div

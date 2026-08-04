@@ -7,15 +7,22 @@ import { LivePreviewDrawer } from "./live-preview-drawer";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { SaveStatusProvider } from "@/lib/autosave/save-status-context";
 import { ActivityProvider } from "@/lib/activity/activity-context";
-import { demoCategories, demoDishes, demoRestaurant } from "@/lib/demo/note-di-caffe-demo";
+import type { DemoCategory, DemoDish } from "@/lib/demo/types";
+import type { Restaurant } from "@/lib/types/database";
 
 export function DashboardShell({
   slug,
   restaurantName,
+  restaurant,
+  categories,
+  dishes,
   children,
 }: {
   slug: string;
   restaurantName: string;
+  restaurant: Restaurant;
+  categories: DemoCategory[];
+  dishes: DemoDish[];
   children: React.ReactNode;
 }) {
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -56,9 +63,9 @@ export function DashboardShell({
           <LivePreviewDrawer
             open={previewOpen}
             onOpenChange={setPreviewOpen}
-            restaurant={demoRestaurant}
-            categories={demoCategories}
-            dishes={demoDishes}
+            restaurant={restaurant}
+            categories={categories}
+            dishes={dishes}
           />
         </div>
       </ActivityProvider>

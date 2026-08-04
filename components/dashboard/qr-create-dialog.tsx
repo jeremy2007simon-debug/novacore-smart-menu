@@ -13,38 +13,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { QrCode, QrType } from "@/lib/types/database";
+import type { QrType } from "@/lib/types/database";
 
 export function QrCreateDialog({
   open,
   onOpenChange,
-  restaurantId,
   onCreate,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  restaurantId: string;
-  onCreate: (qr: QrCode) => void;
+  onCreate: (input: { label: string; type: QrType; tableNumber: number | null }) => void | Promise<void>;
 }) {
   const [type, setType] = useState<QrType>("table");
   const [tableNumber, setTableNumber] = useState("");
   const [label, setLabel] = useState("");
+  const [creating, setCreating] = useState(false);
 
-  function handleCreate() {
+  async function handleCreate() {
     const finalLabel = label.trim() || (type === "table" ? `Mesa ${tableNumber || "?"}` : "Carta general");
-    onCreate({
-      id: `new-qr-${Date.now()}`,
-      restaurant_id: restaurantId,
-      label: finalLabel,
-      type,
-      table_number: type === "table" && tableNumber ? Number(tableNumber) : null,
-      status: "active",
-      scan_count: 0,
-      created_at: new Date().toISOString(),
-    });
-    onOpenChange(false);
-    setLabel("");
-    setTableNumber("");
+    setCreating(true);
+    try {
+      await onCreate({
+        label: finalLabel,
+        type,
+        tableNumber: type === "table" && tableNumber ? Number(tableNumber) : null,
+      });
+      onOpenChange(false);
+      setLabel("");
+      setTableNumber("");
+    } finally {
+      setCreating(false);
+    }
   }
 
   return (
@@ -95,10 +94,12 @@ export function QrCreateDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={creating}>
             Cancelar
           </Button>
-          <Button onClick={handleCreate}>Generar QR</Button>
+          <Button onClick={handleCreate} disabled={creating}>
+            {creating ? "Generando…" : "Generar QR"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

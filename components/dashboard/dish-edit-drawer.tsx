@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Rating } from "@/components/ui/rating";
@@ -21,8 +20,9 @@ import { DISH_STATUS_LABEL } from "./dish-status-badge";
 import { showToast } from "@/components/ui/toast";
 import { useDebouncedCommit } from "@/lib/utils/use-debounced-commit";
 import { cn } from "@/lib/utils/cn";
-import type { DemoCategory, DemoDish } from "@/lib/demo/note-di-caffe-demo";
-import type { DishBadge, DishStatus } from "@/lib/types/database";
+import { uploadPublicImage } from "@/features/dashboard/upload-image";
+import type { DemoCategory, DemoDish } from "@/lib/demo/types";
+import type { Allergen, DishBadge, DishStatus, Restaurant } from "@/lib/types/database";
 
 const BADGE_OPTIONS: { value: DishBadge; label: string }[] = [
   { value: "recommended", label: "Recomendado" },
@@ -41,19 +41,23 @@ export function DishEditDrawer({
   onOpenChange,
   dish,
   categories,
+  allergens,
+  restaurant,
   onFieldChange,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   dish: DemoDish;
   categories: DemoCategory[];
+  allergens: Allergen[];
+  restaurant: Pick<Restaurant, "id" | "theme" | "currency">;
   onFieldChange: (patch: Partial<DemoDish>) => void;
 }) {
   const [name, setName] = useState(dish.name);
   const [price, setPrice] = useState((dish.price_cents / 100).toFixed(2));
   const [shortDescription, setShortDescription] = useState(dish.short_description ?? "");
   const [ingredients, setIngredients] = useState<string[]>(dish.ingredients);
-  const [allergens, setAllergens] = useState<string[]>(dish.allergen_codes ?? []);
+  const [allergensValue, setAllergens] = useState<string[]>(dish.allergen_codes ?? []);
   const [badges, setBadges] = useState<DishBadge[]>(dish.badges);
   const [images, setImages] = useState<string[]>(dish.gallery_urls ?? (dish.image_url ? [dish.image_url] : []));
 
@@ -96,8 +100,13 @@ export function DishEditDrawer({
     onFieldChange({ image_url: next[0] ?? null, gallery_urls: next });
   }
 
-  function changeNeedsReview(value: boolean) {
-    onFieldChange({ needs_review: value });
+  async function uploadImage(file: File): Promise<string | null> {
+    const result = await uploadPublicImage({ folder: "dishes", restaurantId: restaurant.id, file });
+    if (!result.ok) {
+      showToast.error("No se pudo subir la imagen", result.message);
+      return null;
+    }
+    return result.url;
   }
 
   const previewDish = {
@@ -110,7 +119,7 @@ export function DishEditDrawer({
     avg_rating: dish.avg_rating,
     rating_count: dish.rating_count,
     ingredients,
-    allergenCodes: allergens,
+    allergenCodes: allergensValue,
   };
 
   return (
@@ -123,19 +132,15 @@ export function DishEditDrawer({
 
         <div className="flex flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto p-6">
-            {dish.needs_review ? (
+            {dish.status === "hidden" ? (
               <div className="mb-6 flex items-start gap-3 rounded-lg border border-danger/30 bg-danger/10 p-3">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" aria-hidden="true" />
                 <div className="flex-1 text-sm text-foreground">
-                  <p className="font-medium">Pendiente de revisión</p>
+                  <p className="font-medium">Oculto para clientes</p>
                   <p className="mt-0.5 text-muted-foreground">
-                    Este plato viene de la carta fotografiada y algún dato no se pudo leer con confianza. Revisa y
-                    corrige lo que haga falta.
+                    Revisa que el nombre y el precio son correctos y cambia la disponibilidad de aquí abajo a
+                    «Disponible» cuando esté listo para publicarse.
                   </p>
-                  <label className="mt-2 flex items-center gap-2 text-sm">
-                    <Checkbox checked={dish.needs_review} onCheckedChange={(v) => changeNeedsReview(v === true)} />
-                    Ya lo he revisado y corregido
-                  </label>
                 </div>
               </div>
             ) : null}
@@ -234,7 +239,7 @@ export function DishEditDrawer({
               </TabsContent>
 
               <TabsContent value="imagenes">
-                <ImageGalleryEditor value={images} onChange={changeImages} />
+                <ImageGalleryEditor value={images} onChange={changeImages} onUpload={uploadImage} />
               </TabsContent>
 
               <TabsContent value="ingredientes">
@@ -247,7 +252,7 @@ export function DishEditDrawer({
               <TabsContent value="alergenos">
                 <Label>Alérgenos</Label>
                 <div className="mt-1.5">
-                  <AllergenPicker value={allergens} onChange={changeAllergens} />
+                  <AllergenPicker value={allergensValue} onChange={changeAllergens} allergens={allergens} />
                 </div>
               </TabsContent>
 
@@ -307,7 +312,7 @@ export function DishEditDrawer({
           </div>
 
           <div className="hidden w-80 shrink-0 items-center justify-center border-l border-border bg-surface-raised p-6 lg:flex">
-            <DishLivePreview dish={previewDish} />
+            <DishLivePreview dish={previewDish} restaurant={restaurant} allergens={allergens} />
           </div>
         </div>
 

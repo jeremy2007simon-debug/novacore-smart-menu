@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   AlertTriangle,
   ArrowRight,
@@ -16,28 +17,35 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { StatTile } from "@/components/dashboard/stat-tile";
 import { LiveActivityFeed } from "@/components/dashboard/live-activity-feed";
 import { RestaurantStatusToggle } from "@/components/dashboard/restaurant-status-toggle";
-import { demoCategories, demoDishes, demoRestaurant, demoReviews } from "@/lib/demo/note-di-caffe-demo";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getOwnerRestaurant } from "@/features/dashboard/get-owner-restaurant";
 
 type OwnerDashboardPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-/**
- * NOTA — fase de diseño: esta pantalla usa datos de demostración
- * (lib/demo/note-di-caffe-demo.ts). Nada de lo que se ve aquí lee ni
- * escribe todavía en Supabase — eso llega en el siguiente bloque, una vez
- * aprobada la experiencia.
- */
 export default async function OwnerDashboardPage({ params }: OwnerDashboardPageProps) {
   const { slug } = await params;
+  const restaurant = await getOwnerRestaurant(slug);
+  if (!restaurant) notFound();
 
-  const availableDishes = demoDishes.filter((d) => d.status === "available").length;
-  const soldOutDishes = demoDishes.filter((d) => d.status === "sold_out").length;
-  const hiddenDishes = demoDishes.filter((d) => d.status === "hidden").length;
-  const dishesNeedingReview = demoDishes.filter((d) => d.needs_review);
-  const pendingReviews = demoReviews.filter((r) => r.status === "pending").length;
+  const supabase = await createSupabaseServerClient();
+  const [{ data: dishes }, { data: categories }, { data: reviews }] = await Promise.all([
+    supabase.from("dishes").select("status, avg_rating, rating_count").eq("restaurant_id", restaurant.id),
+    supabase.from("categories").select("id").eq("restaurant_id", restaurant.id),
+    supabase.from("reviews").select("status").eq("restaurant_id", restaurant.id),
+  ]);
 
-  const ratedDishes = demoDishes.filter((d) => d.rating_count > 0);
+  const allDishes = dishes ?? [];
+  const availableDishes = allDishes.filter((d) => d.status === "available").length;
+  const soldOutDishes = allDishes.filter((d) => d.status === "sold_out").length;
+  // Los platos ocultos hoy son, en la práctica, los pendientes de revisión
+  // de la importación desde foto — no hay un motivo distinto guardado en
+  // el esquema todavía, así que el aviso de abajo asume ese caso.
+  const hiddenDishes = allDishes.filter((d) => d.status === "hidden").length;
+  const pendingReviews = (reviews ?? []).filter((r) => r.status === "pending").length;
+
+  const ratedDishes = allDishes.filter((d) => d.rating_count > 0);
   const totalRatingCount = ratedDishes.reduce((sum, d) => sum + d.rating_count, 0);
   const avgRating =
     totalRatingCount > 0
@@ -49,25 +57,23 @@ export default async function OwnerDashboardPage({ params }: OwnerDashboardPageP
       <PageHeader
         title="Resumen"
         description="Un vistazo rápido a cómo está tu carta hoy."
-        action={<RestaurantStatusToggle initialStatus={demoRestaurant.operating_status} />}
+        action={<RestaurantStatusToggle initialStatus={restaurant.operating_status} />}
       />
 
-      {dishesNeedingReview.length > 0 ? (
+      {hiddenDishes > 0 ? (
         <Card className="mb-6 border-danger/40 bg-danger/10 p-4">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-0">
             <div className="flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 shrink-0 text-danger" aria-hidden="true" />
               <div>
-                <p className="text-sm font-medium text-foreground">
-                  {dishesNeedingReview.length} platos pendientes de revisión
-                </p>
+                <p className="text-sm font-medium text-foreground">{hiddenDishes} platos ocultos</p>
                 <p className="text-sm text-muted-foreground">
-                  Se importaron de la carta en foto y algún dato no se pudo leer con confianza.
+                  No son visibles en la carta pública — revísalos y actívalos cuando estén listos.
                 </p>
               </div>
             </div>
             <Button asChild size="sm" variant="outline">
-              <Link href={`/dashboard/${slug}/platos?status=needs_review`}>
+              <Link href={`/dashboard/${slug}/platos?status=hidden`}>
                 Revisar ahora <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -96,7 +102,7 @@ export default async function OwnerDashboardPage({ params }: OwnerDashboardPageP
           value={hiddenDishes}
           href={`/dashboard/${slug}/platos?status=hidden`}
         />
-        <StatTile icon={Layers} label="Categorías" value={demoCategories.length} href={`/dashboard/${slug}/categorias`} />
+        <StatTile icon={Layers} label="Categorías" value={(categories ?? []).length} href={`/dashboard/${slug}/categorias`} />
         <StatTile
           icon={Star}
           label="Reseñas pendientes"

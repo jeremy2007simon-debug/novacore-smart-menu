@@ -1,14 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-import { demoAllergens } from "@/lib/demo/note-di-caffe-demo";
+import type { Allergen } from "@/lib/types/database";
 
 export function AllergenPicker({
   value,
   onChange,
+  allergens,
 }: {
   value: string[];
   onChange: (next: string[]) => void;
+  allergens: Pick<Allergen, "code" | "name_es">[];
 }) {
   function toggle(code: string) {
     onChange(value.includes(code) ? value.filter((c) => c !== code) : [...value, code]);
@@ -16,7 +18,7 @@ export function AllergenPicker({
 
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-      {demoAllergens.map((allergen) => {
+      {allergens.map((allergen) => {
         const active = value.includes(allergen.code);
         return (
           <button
